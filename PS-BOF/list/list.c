@@ -125,7 +125,7 @@ void go(char *args, int len) {
                            (ULONG)(wcslen(L"N/A") * sizeof(WCHAR)), NULL);
         } else {
             BeaconPkgBytes((PBYTE)user_token,
-                           (ULONG)(wcslen(user_token) * sizeof(WCHAR)), NULL);
+                           (ULONG)(KERNEL32$lstrlenW(user_token) * sizeof(WCHAR)), NULL);
             MSVCRT$free(user_token);
         }
 
