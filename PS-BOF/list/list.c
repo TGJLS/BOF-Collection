@@ -1,7 +1,6 @@
 #include <windows.h>
 #include "bofdefs.h"
 #include "beacon.h"
-#include "adaptix.h"
 
 #ifndef STATUS_BUFFER_TOO_SMALL
 #define STATUS_BUFFER_TOO_SMALL ((NTSTATUS)0xC0000023)
@@ -64,6 +63,16 @@ cleanup:
     return user_domain;
 }
 
+static char* WideToUtf8(LPCWSTR wide, int wide_chars) {
+    int needed = KERNEL32$WideCharToMultiByte(CP_UTF8, 0, wide, wide_chars, NULL, 0, NULL, NULL);
+    if (needed <= 0) return NULL;
+    char *buf = (char*)MSVCRT$malloc(needed + 1);
+    if (!buf) return NULL;
+    KERNEL32$WideCharToMultiByte(CP_UTF8, 0, wide, wide_chars, buf, needed, NULL, NULL);
+    buf[needed] = '\0';
+    return buf;
+}
+
 void go(char *args, int len) {
     SYSTEM_PROCESS_INFORMATION *system_proc_info = NULL;
     PVOID  base_sysproc  = NULL;
@@ -90,6 +99,11 @@ void go(char *args, int len) {
 
     base_sysproc = system_proc_info;
 
+    BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6s %6s %7s  %-35s  %s\n",
+                 "Name", "PID", "PPID", "Session", "User", "Arch");
+    BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6s %6s %7s  %-35s  %s\n",
+                 "----", "---", "----", "-------", "----", "----");
+
     do {
         proc_handle  = NULL;
         token_handle = NULL;
@@ -108,28 +122,29 @@ void go(char *args, int len) {
             KERNEL32$CloseHandle(proc_handle);
         }
 
-        if (system_proc_info->ImageName.Buffer) {
-            BeaconPkgBytes((PBYTE)system_proc_info->ImageName.Buffer,
-                           system_proc_info->ImageName.Length, NULL);
-        } else {
-            BeaconPkgBytes((PBYTE)L"[System]",
-                           (ULONG)(wcslen(L"[System]") * sizeof(WCHAR)), NULL);
+        char *name = NULL;
+        char *user = NULL;
+
+        if (system_proc_info->ImageName.Buffer && system_proc_info->ImageName.Length > 0) {
+            name = WideToUtf8(system_proc_info->ImageName.Buffer,
+                              system_proc_info->ImageName.Length / sizeof(WCHAR));
         }
 
-        BeaconPkgInt32((INT32)HandleToUlong(system_proc_info->UniqueProcessId), NULL);
-        BeaconPkgInt32((INT32)HandleToUlong(system_proc_info->InheritedFromUniqueProcessId), NULL);
-        BeaconPkgInt32((INT32)system_proc_info->SessionId, NULL);
-
-        if (!user_token) {
-            BeaconPkgBytes((PBYTE)L"N/A",
-                           (ULONG)(wcslen(L"N/A") * sizeof(WCHAR)), NULL);
-        } else {
-            BeaconPkgBytes((PBYTE)user_token,
-                           (ULONG)(KERNEL32$lstrlenW(user_token) * sizeof(WCHAR)), NULL);
+        if (user_token) {
+            user = WideToUtf8(user_token, KERNEL32$lstrlenW(user_token));
             MSVCRT$free(user_token);
         }
 
-        BeaconPkgInt32((INT32)Isx64, NULL);
+        BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6lu %6lu %7lu  %-35s  %s\n",
+                     name ? name : "[System]",
+                     HandleToUlong(system_proc_info->UniqueProcessId),
+                     HandleToUlong(system_proc_info->InheritedFromUniqueProcessId),
+                     (ULONG)system_proc_info->SessionId,
+                     user ? user : "N/A",
+                     Isx64 ? "x86" : "x64");
+
+        if (name) MSVCRT$free(name);
+        if (user) MSVCRT$free(user);
 
         if (system_proc_info->NextEntryOffset == 0)
             break;

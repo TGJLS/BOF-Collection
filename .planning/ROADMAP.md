@@ -64,7 +64,7 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 ### v1.5 PS-BOF (Phases 22–28)
 
 - [x] **Phase 22: PS-BOF Setup** — PS-BOF directory, Makefile skeleton, and NT/PSAPI API declarations in bofdefs.h
-- [ ] **Phase 23: Core Process BOFs** — ps list, ps kill, ps suspend, ps resume (simple BOFs + Adaptix process format)
+- [x] **Phase 23: Core Process BOFs** — ps list, ps kill, ps suspend, ps resume (simple BOFs + Adaptix process format) (completed 2026-05-16)
 - [ ] **Phase 24: ps run** — Process creation BOF with CreateProcess, WithLogon, WithToken, and PPID spoofing
 - [ ] **Phase 25: ps grep** — Process inspector BOF: token, modules, command line, threads
 - [ ] **Phase 26: ps.axs + Process Browser** — Adaptix script wiring all 6 commands plus Process Browser integration
@@ -85,18 +85,17 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
   - [x] 22-01-PLAN.md — PS-BOF directory tree, Makefile, 6 stub sources, bofdefs.h NT/PSAPI extensions, root Makefile SUBDIRS wiring
 
 ### Phase 23: Core Process BOFs
-**Goal**: Operators can list all running processes, kill a process by PID, and suspend or resume a process by PID — and the ps list output is in the Adaptix-compatible binary format for Process Browser consumption.
+**Goal**: Operators can list all running processes, kill a process by PID, and suspend or resume a process by PID using standard BOF output compatible with any C2 framework.
 **Depends on**: Phase 22
-**Requirements**: PS-01, PS-02, PS-08, PS-09, PB-01
+**Requirements**: PS-01, PS-02, PS-08, PS-09
 **Success Criteria** (what must be TRUE):
   1. Operator runs `ps list` and sees a table of all running processes with name, PID, PPID, session ID, owner (domain\user), and architecture
   2. Operator runs `ps kill <PID>` (and optionally `ps kill <PID> <exit_code>`) and the target process is no longer visible in a subsequent `ps list` output
   3. Operator runs `ps suspend <PID>` and the target process enters a suspended state; `ps resume <PID>` returns it to running
-  4. ps list packs each process entry as (name wstr, PID int32, PPID int32, session int32, user wstr, arch int32) so the Adaptix Process Browser can parse and display it
 **Plans**: 3 plans
-  - [ ] 23-01-PLAN.md — Create `_include/adaptix.h`; add 10 declarations to `_include/bofdefs.h` (KERNEL32/ADVAPI32/NTDLL/MSVCRT$malloc); port `list.cc` → `PS-BOF/list/list.c` (NtQuerySystemInformation loop + GetUserByToken goto-cleanup + BeaconPkgBytes/Int32 PB-01 output) — Wave 1
-  - [ ] 23-02-PLAN.md — Port `kill.cc` → `PS-BOF/kill/kill.c` (BeaconDataInt PID + optional exit_code; KERNEL32$OpenProcess(PROCESS_TERMINATE) + KERNEL32$TerminateProcess) — Wave 2 (depends on 23-01)
-  - [ ] 23-03-PLAN.md — Implement `suspend.c` and `resume.c` from scratch per D-08 (BeaconDataInt PID; KERNEL32$OpenProcess(PROCESS_SUSPEND_RESUME); NTDLL$NtSuspendProcess / NTDLL$NtResumeProcess) — Wave 2 (depends on 23-01)
+  - [x] 23-01-PLAN.md — Add 10 declarations to `_include/bofdefs.h` (KERNEL32/ADVAPI32/NTDLL/MSVCRT$malloc); port `list.cc` → `PS-BOF/list/list.c` (NtQuerySystemInformation loop + GetUserByToken goto-cleanup + BeaconPrintf text table output) — Wave 1
+  - [x] 23-02-PLAN.md — Port `kill.cc` → `PS-BOF/kill/kill.c` (BeaconDataInt PID + optional exit_code; KERNEL32$OpenProcess(PROCESS_TERMINATE) + KERNEL32$TerminateProcess) — Wave 2 (depends on 23-01)
+  - [x] 23-03-PLAN.md — Implement `suspend.c` and `resume.c` from scratch per D-08 (BeaconDataInt PID; KERNEL32$OpenProcess(PROCESS_SUSPEND_RESUME); NTDLL$NtSuspendProcess / NTDLL$NtResumeProcess) — Wave 2 (depends on 23-01)
 
 ### Phase 24: ps run
 **Goal**: Operators can launch a new process using any of three creation methods — default CreateProcess, CreateProcessWithLogon with supplied credentials, or CreateProcessWithToken using a stolen handle — with optional PPID spoofing and stdout/stderr capture.
@@ -125,6 +124,7 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 
 ### Phase 26: ps.axs + Process Browser
 **Goal**: All PS-BOF commands are accessible to operators via the Adaptix agent script, and the Adaptix Process Browser opens and auto-populates by running ps list against the active beacon session.
+**Note**: ps list outputs a plain-text table via BeaconPrintf (not the Adaptix binary format). Process Browser integration will require ps list to produce structured binary output (BeaconPkgBytes/BeaconPkgInt32) — this phase must decide whether to add a separate binary-output variant or wire the browser against the text output with a parser.
 **Depends on**: Phase 23 (ps list must exist for Process Browser to wire against)
 **Requirements**: PB-02, PB-03
 **Success Criteria** (what must be TRUE):
@@ -174,7 +174,7 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 | 20. Run & Validate Tests | v1.4 | 4/4 | Complete | 2026-05-15 |
 | 21. CI/CD Automation | v1.4 | 1/1 | Complete | 2026-05-15 |
 | 22. PS-BOF Setup | v1.5 | 1/1 | Complete    | 2026-05-16 |
-| 23. Core Process BOFs | v1.5 | 0/3 | Planned | - |
+| 23. Core Process BOFs | v1.5 | 3/3 | Complete    | 2026-05-16 |
 | 24. ps run | v1.5 | 0/? | Not started | - |
 | 25. ps grep | v1.5 | 0/? | Not started | - |
 | 26. ps.axs + Process Browser | v1.5 | 0/? | Not started | - |

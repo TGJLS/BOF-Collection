@@ -1,4 +1,0 @@
-#pragma once
-
-DECLSPEC_IMPORT VOID BeaconPkgBytes(PBYTE Buffer, ULONG Length, PCHAR UUID);
-DECLSPEC_IMPORT VOID BeaconPkgInt32(INT32 Data, PCHAR UUID);

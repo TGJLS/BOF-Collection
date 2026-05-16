@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: PS-BOF
-status: executing
+status: ready_to_plan
 stopped_at: Phase 23 context gathered
-last_updated: "2026-05-16T07:14:01.854Z"
-last_activity: 2026-05-16 -- Phase 23 planning complete
+last_updated: "2026-05-16T08:00:00.000Z"
+last_activity: 2026-05-16 -- Remove Kharon-specific BeaconPkg* API from ps list; generalize to standard BeaconPrintf output
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
   completed_plans: 1
-  percent: 25
+  percent: 29
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 
 ## Current Position
 
-Phase: 23
+Phase: 24
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-05-16 -- Phase 23 planning complete
+Status: Ready to plan
+Last activity: 2026-05-16
 
 Progress: [█░░░░░░░░░] 1/7 phases complete
 
@@ -48,6 +48,7 @@ Progress: [█░░░░░░░░░] 1/7 phases complete
 - v1.5: all work done on a new branch from dev (branch: ps-bof) — not committed to main directly
 - v1.5: ps kill accepts optional exit_code argument matching Kharon's process kill <pid> [exit_code]
 - v1.5: ps run axs flags match Kharon exactly: --command, --state, --pipe, --domain, --username, --password, --token
+- v1.5: BeaconPkgBytes/BeaconPkgInt32 (Kharon-specific) removed from ps list; replaced with standard BeaconPrintf text table output; `_include/adaptix.h` deleted — Process Browser binary format deferred to Phase 26
 
 ### Blockers/Concerns
 
