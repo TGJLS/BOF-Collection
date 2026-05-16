@@ -71,6 +71,7 @@ WINBASEAPI WINBOOL WINAPI KERNEL32$DeleteFileW(LPCWSTR lpFileName);
 // MSVCRT (used by base.c shared by all FS-BOF, and by fserror.h fallback)
 // =============================================================================
 WINBASEAPI void *__cdecl MSVCRT$calloc(size_t _NumOfElements, size_t _SizeOfElements);
+WINBASEAPI void *__cdecl MSVCRT$malloc(size_t _Size);
 WINBASEAPI void __cdecl MSVCRT$free(void *_Memory);
 WINBASEAPI int __cdecl MSVCRT$vsnprintf(char * __restrict__ d, size_t n, const char * __restrict__ format, va_list arg);
 WINBASEAPI int __cdecl MSVCRT$_snprintf(char * __restrict__ _Dest, size_t _Count, const char * __restrict__ _Format, ...);
@@ -87,6 +88,27 @@ WINBASEAPI VOID NTAPI NTDLL$RtlExitUserThread(NTSTATUS Status);
 WINBASEAPI NTSTATUS NTAPI NTDLL$NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass, PVOID SystemInformation, ULONG SystemInformationLength, PULONG ReturnLength);
 WINBASEAPI NTSTATUS NTAPI NTDLL$NtSuspendProcess(HANDLE ProcessHandle);
 WINBASEAPI NTSTATUS NTAPI NTDLL$NtResumeProcess(HANDLE ProcessHandle);
+
+// =============================================================================
+// KERNEL32 — process management (PS-BOF)
+// =============================================================================
+WINBASEAPI HANDLE WINAPI KERNEL32$OpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId);
+WINBASEAPI BOOL WINAPI KERNEL32$TerminateProcess(HANDLE hProcess, UINT uExitCode);
+WINBASEAPI BOOL WINAPI KERNEL32$IsWow64Process(HANDLE hProcess, PBOOL Wow64Process);
+WINBASEAPI HANDLE WINAPI KERNEL32$GetCurrentProcess(VOID);
+
+// =============================================================================
+// ADVAPI32 — token / privilege (PS-BOF)
+// =============================================================================
+WINADVAPI BOOL WINAPI ADVAPI32$OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAccess, PHANDLE TokenHandle);
+WINADVAPI BOOL WINAPI ADVAPI32$LookupAccountSidW(LPCWSTR lpSystemName, PSID Sid, LPWSTR Name, LPDWORD cchName, LPWSTR ReferencedDomainName, LPDWORD cchReferencedDomainName, PSID_NAME_USE peUse);
+WINADVAPI BOOL WINAPI ADVAPI32$AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAllPrivileges, PTOKEN_PRIVILEGES NewState, DWORD BufferLength, PTOKEN_PRIVILEGES PreviousState, PDWORD ReturnLength);
+WINADVAPI BOOL WINAPI ADVAPI32$LookupPrivilegeValueW(LPCWSTR lpSystemName, LPCWSTR lpName, PLUID lpLuid);
+
+// =============================================================================
+// NTDLL — token query (PS-BOF)
+// =============================================================================
+WINBASEAPI NTSTATUS NTAPI NTDLL$NtQueryInformationToken(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, PVOID TokenInformation, ULONG TokenInformationLength, PULONG ReturnLength);
 
 // =============================================================================
 // PSAPI — module enumeration (PS-BOF grep)
