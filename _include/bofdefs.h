@@ -14,6 +14,7 @@
 
 #include <windows.h>
 #include <winternl.h>
+#include <psapi.h>
 
 // =============================================================================
 // KERNEL32 — memory management
@@ -79,6 +80,20 @@ WINBASEAPI int __cdecl MSVCRT$_snprintf(char * __restrict__ _Dest, size_t _Count
 // =============================================================================
 WINBASEAPI VOID NTAPI NTDLL$RtlExitUserProcess(NTSTATUS Status);
 WINBASEAPI VOID NTAPI NTDLL$RtlExitUserThread(NTSTATUS Status);
+
+// =============================================================================
+// NTDLL — process control (PS-BOF)
+// =============================================================================
+WINBASEAPI NTSTATUS NTAPI NTDLL$NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass, PVOID SystemInformation, ULONG SystemInformationLength, PULONG ReturnLength);
+WINBASEAPI NTSTATUS NTAPI NTDLL$NtSuspendProcess(HANDLE ProcessHandle);
+WINBASEAPI NTSTATUS NTAPI NTDLL$NtResumeProcess(HANDLE ProcessHandle);
+
+// =============================================================================
+// PSAPI — module enumeration (PS-BOF grep)
+// =============================================================================
+WINBASEAPI WINBOOL WINAPI PSAPI$EnumProcessModulesEx(HANDLE hProcess, HMODULE *lphModule, DWORD cb, LPDWORD lpcbNeeded, DWORD dwFilterFlag);
+WINBASEAPI DWORD   WINAPI PSAPI$GetModuleFileNameExW(HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
+WINBASEAPI WINBOOL WINAPI PSAPI$GetModuleInformation(HANDLE hProcess, HMODULE hModule, LPMODULEINFO lpmodinfo, DWORD cb);
 
 // =============================================================================
 // Helper macros (used by base.c shared across FS-BOF sources)
