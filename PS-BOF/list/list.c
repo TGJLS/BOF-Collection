@@ -5,6 +5,9 @@
 #ifndef STATUS_BUFFER_TOO_SMALL
 #define STATUS_BUFFER_TOO_SMALL ((NTSTATUS)0xC0000023)
 #endif
+#ifndef STATUS_INFO_LENGTH_MISMATCH
+#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004)
+#endif
 
 static WCHAR* GetUserByToken(HANDLE token_handle) {
     TOKEN_USER *token_user_ptr = NULL;
@@ -83,21 +86,24 @@ void go(char *args, int len) {
     HANDLE token_handle  = NULL;
     HANDLE proc_handle   = NULL;
 
-    NTDLL$NtQuerySystemInformation(SystemProcessInformation, NULL, 0, &return_length);
+    do {
+        NTDLL$NtQuerySystemInformation(SystemProcessInformation, NULL, 0, &return_length);
+        return_length += 4096;
+        if (base_sysproc) MSVCRT$free(base_sysproc);
+        base_sysproc = MSVCRT$malloc(return_length);
+        if (!base_sysproc) return;
+        status = NTDLL$NtQuerySystemInformation(SystemProcessInformation,
+            base_sysproc, return_length, &return_length);
+    } while (status == STATUS_INFO_LENGTH_MISMATCH);
 
-    system_proc_info = (SYSTEM_PROCESS_INFORMATION*)MSVCRT$malloc(return_length);
-    if (!system_proc_info) return;
-
-    status = NTDLL$NtQuerySystemInformation(SystemProcessInformation,
-        system_proc_info, return_length, &return_length);
     if (!NT_SUCCESS(status)) {
         BeaconPrintf(CALLBACK_ERROR, "Failed to get system process information, error: %d\n",
                      KERNEL32$GetLastError());
-        MSVCRT$free(system_proc_info);
+        MSVCRT$free(base_sysproc);
         return;
     }
 
-    base_sysproc = system_proc_info;
+    system_proc_info = (SYSTEM_PROCESS_INFORMATION*)base_sysproc;
 
     BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6s %6s %7s  %-35s  %s\n",
                  "Name", "PID", "PPID", "Session", "User", "Arch");
