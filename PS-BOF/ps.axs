@@ -36,6 +36,8 @@ cmd_ps_run.addArgFlagInt("--token", "token", "Token handle (CreateProcessWithTok
 cmd_ps_run.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let cmd    = parsed_json["command"] || "";
     let state  = parsed_json["state"] === "suspended" ? 1 : 0;
+    // addArgBool stores its key with the full flag name including leading dashes,
+    // unlike addArgFlagString which strips the dashes and uses the separate key arg.
     let pipe   = parsed_json["--pipe"] ? 1 : 0;
     let ppid   = parsed_json["ppid"] || 0;
     let domain = parsed_json["domain"] || "";
