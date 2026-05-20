@@ -98,12 +98,12 @@ void go(char *args, int len)
     WCHAR            cmd_buf[32768];
 
     /* Zero-init everything */
-    memset(&a,    0, sizeof(a));
-    memset(&pi,   0, sizeof(pi));
-    memset(&siex, 0, sizeof(siex));
-    memset(&si,   0, sizeof(si));
-    memset(&sa,   0, sizeof(sa));
-    memset(cmd_buf, 0, sizeof(cmd_buf));
+    intZeroMemory(&a,      sizeof(a));
+    intZeroMemory(&pi,     sizeof(pi));
+    intZeroMemory(&siex,   sizeof(siex));
+    intZeroMemory(&si,     sizeof(si));
+    intZeroMemory(&sa,     sizeof(sa));
+    intZeroMemory(cmd_buf, sizeof(cmd_buf));
 
     /* ---- Parse beacon args ---- */
     BeaconDataParse(&parser, args, len);
