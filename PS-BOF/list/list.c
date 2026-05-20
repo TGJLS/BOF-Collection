@@ -78,7 +78,7 @@ void go(char *args, int len) {
     PVOID  base_sysproc  = NULL;
     ULONG  return_length = 0;
     NTSTATUS status;
-    BOOL   Isx64         = FALSE;
+    BOOL   IsWow64         = FALSE;
     WCHAR *user_token    = NULL;
     HANDLE token_handle  = NULL;
     HANDLE proc_handle   = NULL;
@@ -108,13 +108,13 @@ void go(char *args, int len) {
         proc_handle  = NULL;
         token_handle = NULL;
         user_token   = NULL;
-        Isx64        = FALSE;
+        IsWow64        = FALSE;
 
         proc_handle = KERNEL32$OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE,
             HandleToUlong(system_proc_info->UniqueProcessId));
 
         if (proc_handle) {
-            KERNEL32$IsWow64Process(proc_handle, &Isx64);
+            KERNEL32$IsWow64Process(proc_handle, &IsWow64);
             if (ADVAPI32$OpenProcessToken(proc_handle, TOKEN_QUERY, &token_handle) && token_handle) {
                 user_token = GetUserByToken(token_handle);
                 KERNEL32$CloseHandle(token_handle);
@@ -141,7 +141,7 @@ void go(char *args, int len) {
                      HandleToUlong(system_proc_info->InheritedFromUniqueProcessId),
                      (ULONG)system_proc_info->SessionId,
                      user ? user : "N/A",
-                     Isx64 ? "x86" : "x64");
+                     IsWow64 ? "x86" : "x64");
 
         if (name) MSVCRT$free(name);
         if (user) MSVCRT$free(user);
