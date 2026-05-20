@@ -104,6 +104,10 @@ static void get_modules(HANDLE process_handle) {
     }
 
     mod_count = needed / sizeof(HMODULE);
+    {
+        DWORD buf_capacity = sizeof(modules) / sizeof(HMODULE);
+        if (mod_count > buf_capacity) mod_count = buf_capacity;
+    }
     for (i = 0; i < mod_count; i++) {
         char *name_n = NULL;
         if (PSAPI$GetModuleFileNameExW(process_handle, modules[i], wide_name, MAX_PATH)) {
