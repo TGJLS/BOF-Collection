@@ -123,14 +123,14 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 **Plans**: TBD
 
 ### Phase 26: ps.axs + Process Browser
-**Goal**: All PS-BOF commands are accessible to operators via the Adaptix agent script, and the Adaptix Process Browser opens and auto-populates by running ps list against the active beacon session.
-**Note**: ps list outputs a plain-text table via BeaconPrintf (not the Adaptix binary format). Process Browser integration will require ps list to produce structured binary output (BeaconPkgBytes/BeaconPkgInt32) — this phase must decide whether to add a separate binary-output variant or wire the browser against the text output with a parser.
+**Goal**: All PS-BOF commands are accessible to operators via the Adaptix agent script; Process Browser integration is delivered by the beacon agent plugin (ax_config.axs) with no duplication in ps.axs (D-01).
+**Note**: ps list outputs a plain-text table via BeaconPrintf. The Adaptix Process Browser populates via the beacon agent's native on_processbrowser_list handler in ax_config.axs — not via ps.axs.
 **Depends on**: Phase 23 (ps list must exist for Process Browser to wire against)
 **Requirements**: PB-02, PB-03
 **Success Criteria** (what must be TRUE):
   1. Operator types `ps list`, `ps kill`, `ps run`, `ps grep`, `ps suspend`, or `ps resume` in an Adaptix beacon session and the corresponding BOF executes
-  2. Operator opens the Adaptix Process Browser for a beacon session and the browser populates with the process list without a separate manual invocation
-  3. ps.axs registers `ax.open_browser_process` as a menu action visible in the beacon session context menu
+  2. Operator opens the Adaptix Process Browser for a beacon session and the browser populates with the process list (via beacon agent plugin — ax_config.axs lines 107–110)
+  3. Process Browser menu action is visible in the beacon session context menu (via beacon agent plugin — ax_config.axs lines 11–16; ps.axs does not duplicate this per D-01)
 **Plans**: TBD
 
 ### Phase 27: Documentation
