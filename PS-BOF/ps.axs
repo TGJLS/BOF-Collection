@@ -16,10 +16,10 @@ cmd_ps_kill.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid      = parsed_json["pid"];
     let bof_path = ax.script_dir() + "_bin/kill." + ax.arch(id) + ".o";
     let bof_params;
-    if (parsed_json["exit_code"]) {
+    if (parsed_json["exit_code"] !== undefined && parsed_json["exit_code"] !== null) {
         bof_params = ax.bof_pack("int32,int32", [pid, parsed_json["exit_code"]]);
     } else {
-        bof_params = ax.bof_pack("int32", [pid]);
+        bof_params = ax.bof_pack("int32,int32", [pid, 1]);
     }
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps kill");
 });
