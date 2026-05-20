@@ -67,7 +67,7 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 - [x] **Phase 23: Core Process BOFs** — ps list, ps kill, ps suspend, ps resume (simple BOFs + Adaptix process format) (completed 2026-05-16)
 - [x] **Phase 24: ps run** — Process creation BOF with CreateProcess, WithLogon, WithToken, and PPID spoofing (completed 2026-05-18)
 - [x] **Phase 25: ps grep** — Process inspector BOF: token, modules, command line, threads
-- [ ] **Phase 26: ps.axs + Process Browser** — Adaptix script wiring all 6 commands plus Process Browser integration
+- [x] **Phase 26: ps.axs + Process Browser** — Adaptix script wiring all 6 commands plus Process Browser integration (completed 2026-05-20)
 - [ ] **Phase 27: Documentation** — PS-BOF README and root README update with Kharon credit
 - [ ] **Phase 28: CI/CD Tests** — tasks.yaml entries for all PS-BOF commands and GitHub Actions workflow update
 
@@ -177,6 +177,6 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 | 23. Core Process BOFs | v1.5 | 3/3 | Complete    | 2026-05-16 |
 | 24. ps run | v1.5 | 2/2 | Complete   | 2026-05-18 |
 | 25. ps grep | v1.5 | 0/? | Not started | - |
-| 26. ps.axs + Process Browser | v1.5 | 0/? | Not started | - |
+| 26. ps.axs + Process Browser | v1.5 | 1/1 | Complete   | 2026-05-20 |
 | 27. Documentation | v1.5 | 0/? | Not started | - |
 | 28. CI/CD Tests | v1.5 | 0/? | Not started | - |
