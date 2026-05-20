@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: PS-BOF
 status: executing
-stopped_at: Phase 25 context gathered
-last_updated: "2026-05-20T12:25:38.756Z"
-last_activity: 2026-05-20 -- Phase 25 planning complete
+stopped_at: Phase 25 complete
+last_updated: "2026-05-20T14:38:39.000Z"
+last_activity: 2026-05-20 -- Phase 25 grep.c implemented and compiled
 progress:
   total_phases: 7
-  completed_phases: 3
-  total_plans: 7
-  completed_plans: 6
-  percent: 86
+  completed_phases: 4
+  total_plans: 8
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-15)
 
 **Core value:** Operators can perform common filesystem and process-control operations directly through BOFs without dropping to cmd.exe or PowerShell — minimizing detection surface
-**Current focus:** Phase 24 — ps-run
+**Current focus:** Phase 25 — ps-grep (COMPLETE)
 
 ## Current Position
 
-Phase: 24 (ps-run) — EXECUTING
-Plan: 1 of 2
-Status: Ready to execute
-Last activity: 2026-05-20 -- Phase 25 planning complete
+Phase: 25 (ps-grep) — COMPLETE
+Plan: 1 of 1
+Status: Phase complete; next is Phase 26 (ps.axs + Process Browser)
+Last activity: 2026-05-20 -- Phase 25 grep.c implemented and compiled
 
-Progress: [█░░░░░░░░░] 1/7 phases complete
+Progress: [████░░░░░░] 4/7 phases complete
 
 ## Accumulated Context
 
@@ -56,6 +56,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-20T12:03:19.122Z
-Stopped at: Phase 25 context gathered
-Resume: `/gsd-plan-phase 23` to plan Phase 23 (Core Process BOFs)
+Last session: 2026-05-20T14:38:39.000Z
+Stopped at: Phase 25 complete
+Resume: `/gsd-discuss-phase 26` to discuss Phase 26 (ps.axs + Process Browser)
