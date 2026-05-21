@@ -38,7 +38,7 @@ Note: `--state suspended` launches suspended; `--ppid <PID>` spoofs parent PID.
 
 ## ps grep
 
-Inspect a process by PID. Output sections: token (owner, elevation type, integrity level), modules (name, base address, entry point, size), command line, threads (TIDs).
+Inspect a process by PID. Output sections: token (owner, elevated flag, integrity level), modules (name, base address, entry point, size), command line, threads (TIDs).
 
 ```
 ps grep <PID>
