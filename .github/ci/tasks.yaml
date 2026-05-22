@@ -178,8 +178,8 @@ tasks:
   - cmdline: "ps list"
     expected: "lsass.exe"
 
-  # ps-run-spawn-notepad (CI-02/04/05/06 fixture)
-  - cmdline: 'ps run --command "notepad.exe"'
+  # ps-run-spawn-ping (CI-02/04/05/06 fixture — ping runs indefinitely on server SKUs)
+  - cmdline: 'ps run --command "ping -n 999 127.0.0.1"'
     expected_regex: "Process started: PID \\d+"
     capture:
       pid: "Process started: PID (\\d+)"

@@ -133,8 +133,10 @@ void go(char *args, int len)
 
     /* ---- Setup startup info based on method ---- */
     if (a.method == CREATE_METHOD_DEFAULT) {
-        /* STARTUPINFOEXW path — supports PPID spoofing */
-        siex.StartupInfo.cb        = sizeof(STARTUPINFOEXW);
+        /* cb must match creation_flags: EXTENDED_STARTUPINFO_PRESENT is only
+         * added when PPID spoofing is active, so use sizeof(STARTUPINFOW)
+         * for the plain case — Windows validates cb strictly. */
+        siex.StartupInfo.cb        = a.ppid ? sizeof(STARTUPINFOEXW) : sizeof(STARTUPINFOW);
         siex.StartupInfo.dwFlags   = STARTF_USESHOWWINDOW;
         siex.StartupInfo.wShowWindow = SW_HIDE;
         psi = &siex.StartupInfo;
