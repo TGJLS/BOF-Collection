@@ -86,4 +86,4 @@ var cmd_ps = ax.create_command("ps", "Process management");
 cmd_ps.addSubCommands([cmd_ps_list, cmd_ps_kill, cmd_ps_run, cmd_ps_grep, cmd_ps_suspend, cmd_ps_resume]);
 
 var group_ps = ax.create_commands_group("PS-BOF", [cmd_ps]);
-ax.register_commands_group(group_ps, ["beacon"], ["windows"], []);
+ax.register_commands_group(group_ps, ["beacon", "gopher", "kharon"], ["windows"], []);
