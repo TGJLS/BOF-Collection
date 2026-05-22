@@ -285,7 +285,7 @@ jobs:
                 { echo "✗ Expected 6 PS-BOF x64 objects in container bin, got $count"; exit 1; }
               echo "=== Build verification passed ==="
 
-              uv tool install --reinstall git+https://github.com/TheGr3atJosh/Testing-Kit
+              uv tool install --reinstall "git+https://github.com/TheGr3atJosh/Testing-Kit@9fb3d85b3a7ff2d7a13c8cc1245cb9fd6a053b91"
 
               # ── Server startup ───────────────────────────────────────────
               echo "Generating required TLS certificate..."
