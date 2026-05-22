@@ -69,7 +69,7 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 - [x] **Phase 25: ps grep** — Process inspector BOF: token, modules, command line, threads
 - [x] **Phase 26: ps.axs + Process Browser** — Adaptix script wiring all 6 commands plus Process Browser integration (completed 2026-05-20)
 - [x] **Phase 27: Documentation** — PS-BOF README and root README update with Kharon credit (completed 2026-05-21)
-- [ ] **Phase 28: CI/CD Tests** — tasks.yaml entries for all PS-BOF commands and GitHub Actions workflow update
+- [x] **Phase 28: CI/CD Tests** — tasks.yaml entries for all PS-BOF commands and GitHub Actions workflow update (completed 2026-05-22)
 
 ## Phase Details
 
@@ -179,4 +179,4 @@ See [v1.4 archive](milestones/v1.4-ROADMAP.md) for full phase details.
 | 25. ps grep | v1.5 | 0/? | Not started | - |
 | 26. ps.axs + Process Browser | v1.5 | 1/1 | Complete   | 2026-05-20 |
 | 27. Documentation | v1.5 | 1/1 | Complete   | 2026-05-21 |
-| 28. CI/CD Tests | v1.5 | 0/? | Not started | - |
+| 28. CI/CD Tests | v1.5 | 2/2 | Complete   | 2026-05-22 |

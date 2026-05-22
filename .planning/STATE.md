@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: PS-BOF
-status: verifying
+status: executing
 stopped_at: Phase 28 context gathered
-last_updated: "2026-05-21T06:31:45.710Z"
+last_updated: "2026-05-22T11:27:57.845Z"
 progress:
   total_phases: 7
   completed_phases: 6
-  total_plans: 9
+  total_plans: 11
   completed_plans: 9
-  percent: 100
+  percent: 82
 ---
 
 # Project State
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-15)
 
 **Core value:** Operators can perform common filesystem and process-control operations directly through BOFs without dropping to cmd.exe or PowerShell — minimizing detection surface
-**Current focus:** Phase 27 — documentation
+**Current focus:** Phase 28 — ci-cd-tests
 
 ## Current Position
 
-Phase: 27 (documentation) — COMPLETE
-Plan: 1 of 1
-Status: verified
+Phase: 28 (ci-cd-tests) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 28
 
 Progress: [██████░░░░] 6/7 phases complete
 
