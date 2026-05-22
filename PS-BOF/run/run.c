@@ -189,15 +189,15 @@ void go(char *args, int len)
     if (a.pipe) {
         sa.nLength              = sizeof(SECURITY_ATTRIBUTES);
         sa.lpSecurityDescriptor = NULL;
-        sa.bInheritHandle       = TRUE;  /* child inherits write end */
+        sa.bInheritHandle       = FALSE;  /* create non-inheritable; we mark only pipe_write below */
 
         if (!KERNEL32$CreatePipe(&pipe_read, &pipe_write, &sa, 0)) {
             err = KERNEL32$GetLastError();
             fmt_err("ps run: CreatePipe failed", err);
             goto cleanup;
         }
-        /* Prevent child from inheriting the read end */
-        KERNEL32$SetHandleInformation(pipe_read, HANDLE_FLAG_INHERIT, 0);
+        /* Make only the write end inheritable so no other parent handles leak into the child */
+        KERNEL32$SetHandleInformation(pipe_write, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
 
         if (a.method == CREATE_METHOD_DEFAULT && a.ppid && parent_handle) {
             /*
@@ -237,7 +237,7 @@ void go(char *args, int len)
     switch (a.method) {
     case CREATE_METHOD_DEFAULT:
         success = KERNEL32$CreateProcessW(
-            NULL, cmd_buf, NULL, NULL, TRUE,
+            NULL, cmd_buf, NULL, NULL, (BOOL)a.pipe,
             creation_flags, NULL, NULL,
             psi, &pi);
         break;
