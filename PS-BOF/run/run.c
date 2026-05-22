@@ -94,16 +94,23 @@ void go(char *args, int len)
     DWORD            err;
     BOOL             success      = FALSE;
     LPSTARTUPINFOW   psi          = NULL;
-    /* Writable command-line copy (CreateProcessW may modify lpCommandLine) */
-    WCHAR            cmd_buf[32768];
+    /* Writable command-line copy (CreateProcessW may modify lpCommandLine).
+     * Heap-allocated: 64 KB on the stack would overflow BOF thread stacks. */
+    WCHAR           *cmd_buf      = NULL;
 
     /* Zero-init everything */
+    cmd_buf = (WCHAR*)MSVCRT$malloc(32768 * sizeof(WCHAR));
+    if (!cmd_buf) {
+        BeaconPrintf(CALLBACK_ERROR, "ps run: malloc failed\n");
+        return;
+    }
+
     intZeroMemory(&a,      sizeof(a));
     intZeroMemory(&pi,     sizeof(pi));
     intZeroMemory(&siex,   sizeof(siex));
     intZeroMemory(&si,     sizeof(si));
     intZeroMemory(&sa,     sizeof(sa));
-    intZeroMemory(cmd_buf, sizeof(cmd_buf));
+    intZeroMemory(cmd_buf, 32768 * sizeof(WCHAR));
 
     /* ---- Parse beacon args ---- */
     BeaconDataParse(&parser, args, len);
@@ -303,4 +310,5 @@ cleanup:
     if (pipe_read)     KERNEL32$CloseHandle(pipe_read);
     if (pipe_write)    KERNEL32$CloseHandle(pipe_write);
     if (parent_handle) KERNEL32$CloseHandle(parent_handle);
+    if (cmd_buf)       MSVCRT$free(cmd_buf);
 }
