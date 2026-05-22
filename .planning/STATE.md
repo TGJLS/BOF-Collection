@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: PS-BOF
-status: executing
-stopped_at: Phase 28 context gathered
-last_updated: "2026-05-22T11:27:57.845Z"
+status: complete
+stopped_at: Phase 28 complete
+last_updated: "2026-05-22T13:45:00.000Z"
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 11
-  completed_plans: 9
-  percent: 82
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-15)
 
 **Core value:** Operators can perform common filesystem and process-control operations directly through BOFs without dropping to cmd.exe or PowerShell — minimizing detection surface
-**Current focus:** Phase 28 — ci-cd-tests
+**Current focus:** Milestone v1.5 PS-BOF — COMPLETE
 
 ## Current Position
 
-Phase: 28 (ci-cd-tests) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 28
+Phase: 28 (ci-cd-tests) — COMPLETE
+Plan: 2 of 2
+Status: All phases complete
 
-Progress: [██████░░░░] 6/7 phases complete
+Progress: [██████████] 7/7 phases complete
 
 ## Accumulated Context
 
@@ -54,6 +54,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-05-21T06:31:45.703Z
-Stopped at: Phase 28 context gathered
-Resume: `/gsd-execute-phase 28` to execute Phase 28 (CI/CD Tests)
+Last session: 2026-05-22T13:45:00.000Z
+Stopped at: Phase 28 complete — milestone v1.5 PS-BOF all phases done
+Resume: Trigger CI run to validate PS-BOF end-to-end; then run `/gsd:complete-milestone` to archive
