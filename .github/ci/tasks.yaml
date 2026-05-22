@@ -173,3 +173,39 @@ tasks:
   # pwd-happy-path-step2
   - cmdline: "pwd"
     expected: "C:\\Temp\\fsbof-test"
+
+  # ── PS-BOF ──
+
+  # ps-list
+  - cmdline: "ps list"
+    expected: "System"
+
+  # ps-list-lsass
+  - cmdline: "ps list"
+    expected: "lsass.exe"
+
+  # ps-run-spawn-notepad (CI-02/04/05/06 fixture)
+  - cmdline: 'ps run --command "notepad.exe"'
+    expected_regex: "Process started: PID \\d+"
+    capture:
+      pid: "Process started: PID (\\d+)"
+
+  # ps-run-pipe-whoami (CI-03)
+  - cmdline: 'ps run --command "cmd.exe /c whoami" --pipe'
+    expected_regex: "(?i)ci_runner"
+
+  # ps-grep (CI-04)
+  - cmdline: "ps grep {{pid}}"
+    expected_regex: "(?s)\\[Token\\].*\\[Modules\\].*\\[Cmdline\\].*\\[Threads\\]"
+
+  # ps-suspend (CI-05)
+  - cmdline: "ps suspend {{pid}}"
+    not_expected: "error"
+
+  # ps-resume (CI-06)
+  - cmdline: "ps resume {{pid}}"
+    not_expected: "error"
+
+  # ps-kill (CI-02)
+  - cmdline: "ps kill {{pid}}"
+    not_expected: "error"
