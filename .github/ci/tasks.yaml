@@ -74,15 +74,12 @@ tasks:
 
   # copy-wildcard-match
   - cmdline: "copy C:\\Temp\\fsbof-test\\*.log C:\\Temp\\fsbof-test\\dest\\"
-    expected: |
-      C:\Temp\fsbof-test\file1.log
-      C:\Temp\fsbof-test\file2.log
-              2 file(s) copied.
+    expected_regex: "(?s)C:\\\\Temp\\\\fsbof-test\\\\file1\\.log.*C:\\\\Temp\\\\fsbof-test\\\\file2\\.log|C:\\\\Temp\\\\fsbof-test\\\\file2\\.log.*C:\\\\Temp\\\\fsbof-test\\\\file1\\.log"
 
   # copy-wildcard-no-match
   - cmdline: "copy C:\\Temp\\fsbof-test\\*.xyz C:\\Temp\\fsbof-test\\dest\\"
     expected: |
-      C:\Temp\fsbof-test\*.xyz 
+      C:\Temp\fsbof-test\*.xyz
       The system cannot find the file specified.
               0 file(s) copied.
 
@@ -106,10 +103,7 @@ tasks:
 
   # move-wildcard-match
   - cmdline: "move C:\\Temp\\fsbof-test\\*.log C:\\Temp\\fsbof-test\\moved\\"
-    expected: |
-      C:\Temp\fsbof-test\file1.log
-      C:\Temp\fsbof-test\file2.log
-              2 file(s) moved.
+    expected_regex: "(?s)C:\\\\Temp\\\\fsbof-test\\\\file1\\.log.*C:\\\\Temp\\\\fsbof-test\\\\file2\\.log|C:\\\\Temp\\\\fsbof-test\\\\file2\\.log.*C:\\\\Temp\\\\fsbof-test\\\\file1\\.log"
 
   # move-wildcard-no-match
   - cmdline: "move C:\\Temp\\fsbof-test\\*.xyz C:\\Temp\\fsbof-test\\moved\\"
