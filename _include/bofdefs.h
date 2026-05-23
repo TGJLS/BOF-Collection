@@ -67,6 +67,11 @@ WINBASEAPI WINBOOL WINAPI KERNEL32$MoveFileExW(LPCWSTR lpExistingFileName, LPCWS
 WINBASEAPI WINBOOL WINAPI KERNEL32$DeleteFileW(LPCWSTR lpFileName);
 
 // =============================================================================
+// KERNEL32 — process management (steal BOF)
+// =============================================================================
+WINBASEAPI HANDLE WINAPI KERNEL32$OpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId);
+
+// =============================================================================
 // MSVCRT (used by base.c shared by all FS-BOF, and by fserror.h fallback)
 // =============================================================================
 WINBASEAPI void *__cdecl MSVCRT$calloc(size_t _NumOfElements, size_t _SizeOfElements);
