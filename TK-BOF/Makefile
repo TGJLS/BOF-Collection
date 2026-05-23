@@ -2,7 +2,7 @@ CC64 = x86_64-w64-mingw32-gcc
 CC86 = i686-w64-mingw32-gcc
 STRIP64 = x86_64-w64-mingw32-strip --strip-unneeded
 STRIP86 = i686-w64-mingw32-strip --strip-unneeded
-CFLAGS = -I ../_include -I . -w -Wno-incompatible-pointer-types -Os -DBOF -c
+CFLAGS = -I . -I ../_include -w -Wno-incompatible-pointer-types -Os -DBOF -c
 
 all: bof
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "../_include/bofdefs.h"
 #include <windows.h>
 #include <winternl.h>
 
