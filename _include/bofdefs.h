@@ -76,6 +76,7 @@ WINBASEAPI HANDLE WINAPI KERNEL32$OpenProcess(DWORD dwDesiredAccess, BOOL bInher
 // =============================================================================
 WINBASEAPI void *__cdecl MSVCRT$calloc(size_t _NumOfElements, size_t _SizeOfElements);
 WINBASEAPI void __cdecl MSVCRT$free(void *_Memory);
+WINBASEAPI void * __cdecl MSVCRT$memset(void *dest, int c, size_t count);
 WINBASEAPI int __cdecl MSVCRT$vsnprintf(char * __restrict__ d, size_t n, const char * __restrict__ format, va_list arg);
 WINBASEAPI int __cdecl MSVCRT$_snprintf(char * __restrict__ _Dest, size_t _Count, const char * __restrict__ _Format, ...);
 
