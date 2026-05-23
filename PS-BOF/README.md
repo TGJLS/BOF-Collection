@@ -23,18 +23,17 @@ ps kill <PID> [exit_code]
 Launch a new process. Supports default CreateProcess, credential-based launch (WithLogon), and token-based launch (WithToken), with optional PPID spoofing and stdout/stderr pipe capture.
 
 ```
-ps run --command "cmd.exe /c whoami" --pipe
+ps run --command <cmd> [--pipe] [--ppid <PID>] [--state suspended] [--domain <domain> --username <user> --password <pass>] [--token <handle>]
 ```
 
-```
-ps run --command "cmd.exe" --domain CORP --username admin --password Secret
-```
-
-```
-ps run --command "cmd.exe" --token <handle>
-```
-
-Note: `--state suspended` launches suspended; `--ppid <PID>` spoofs parent PID.
+- `--command <cmd>` — Command line to execute (required)
+- `--pipe` — Capture stdout/stderr via anonymous pipe
+- `--ppid <PID>` — Spoof parent PID
+- `--state suspended` — Launch process in suspended state
+- `--domain <domain>` — Domain for CreateProcessWithLogon
+- `--username <user>` — Username for CreateProcessWithLogon
+- `--password <pass>` — Password for CreateProcessWithLogon
+- `--token <handle>` — Token handle for CreateProcessWithToken
 
 ## ps grep
 

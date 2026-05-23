@@ -69,7 +69,7 @@ Process management: ps list, ps kill, ps run, ps grep, ps suspend, ps resume. [M
 |--------|-----|-----|
 |ps list|`ps list`|List all running processes (PID, PPID, session, owner, arch)|
 |ps kill|`ps kill <PID> [exit_code]`|Terminate a process; optional exit code|
-|ps run|`ps run --command "cmd.exe /c whoami" --pipe`|Launch a process (CreateProcess/WithLogon/WithToken + pipe output)|
+|ps run|`ps run --command <cmd> [--pipe] [--ppid <PID>] [--state suspended] [--domain <domain> --username <user> --password <pass>] [--token <handle>]`|Launch a process (CreateProcess/WithLogon/WithToken); optional PPID spoofing and pipe capture|
 |ps grep|`ps grep <PID>`|Inspect a process: token, modules, cmdline, threads|
 |ps suspend|`ps suspend <PID>`|Suspend a process|
 |ps resume|`ps resume <PID>`|Resume a suspended process|
