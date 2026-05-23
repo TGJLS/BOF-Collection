@@ -5,8 +5,8 @@
 VOID go(IN PCHAR Buffer, IN ULONG Length)
 {
     datap parser;
-    DWORD token_handle = 0;
+    HANDLE token_handle = NULL;
 
     BeaconDataParse(&parser, Buffer, Length);
-    token_handle = (DWORD) BeaconDataInt(&parser);
+    token_handle = (HANDLE)(ULONG_PTR)(DWORD) BeaconDataInt(&parser);
 }
