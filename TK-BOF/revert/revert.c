@@ -4,5 +4,6 @@
 
 VOID go(IN PCHAR Buffer, IN ULONG Length)
 {
-    // No args
+    ADVAPI32$RevertToSelf();
+    BeaconPrintf(CALLBACK_OUTPUT, "[+] Reverted to process token.\n");
 }
