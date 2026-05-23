@@ -127,7 +127,7 @@ void go(char *args, int len)
     /* Copy command to writable buffer */
     if (a.argument) {
         int wlen = KERNEL32$lstrlenW(a.argument);
-        if (wlen >= (int)(sizeof(cmd_buf) / sizeof(WCHAR))) {
+        if (wlen >= 32768) {
             BeaconPrintf(CALLBACK_ERROR, "ps run: command too long\n");
             return;
         }

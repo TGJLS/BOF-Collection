@@ -49,9 +49,9 @@ static WCHAR* GetUserByToken(HANDLE token_handle) {
 
     {
         ULONG di = 0, ui = 0;
-        while (di < domain_len && domain[di]) user_domain[di] = domain[di++];
+        while (domain[di])   { user_domain[di] = domain[di];     di++; }
         user_domain[di++] = L'\\';
-        while (ui < username_ln && username[ui]) user_domain[di++] = username[ui++];
+        while (username[ui]) { user_domain[di] = username[ui]; di++; ui++; }
         user_domain[di] = L'\0';
     }
 
@@ -81,10 +81,11 @@ void go(char *args, int len) {
     PVOID  base_sysproc  = NULL;
     ULONG  return_length = 0;
     NTSTATUS status;
-    BOOL   IsWow64         = FALSE;
+    BOOL   IsWow64       = FALSE;
     WCHAR *user_token    = NULL;
     HANDLE token_handle  = NULL;
     HANDLE proc_handle   = NULL;
+    formatp output_buf;
 
     do {
         NTDLL$NtQuerySystemInformation(SystemProcessInformation, NULL, 0, &return_length);
@@ -105,16 +106,18 @@ void go(char *args, int len) {
 
     system_proc_info = (SYSTEM_PROCESS_INFORMATION*)base_sysproc;
 
-    BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6s %6s %7s  %-35s  %s\n",
-                 "Name", "PID", "PPID", "Session", "User", "Arch");
-    BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6s %6s %7s  %-35s  %s\n",
-                 "----", "---", "----", "-------", "----", "----");
+    BeaconFormatAlloc(&output_buf, 65536);
+
+    BeaconFormatPrintf(&output_buf, "%-50s %6s %6s %7s  %-35s  %s\n",
+                       "Name", "PID", "PPID", "Session", "User", "Arch");
+    BeaconFormatPrintf(&output_buf, "%-50s %6s %6s %7s  %-35s  %s\n",
+                       "----", "---", "----", "-------", "----", "----");
 
     do {
         proc_handle  = NULL;
         token_handle = NULL;
         user_token   = NULL;
-        IsWow64        = FALSE;
+        IsWow64      = FALSE;
 
         proc_handle = KERNEL32$OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE,
             HandleToUlong(system_proc_info->UniqueProcessId));
@@ -141,13 +144,13 @@ void go(char *args, int len) {
             MSVCRT$free(user_token);
         }
 
-        BeaconPrintf(CALLBACK_OUTPUT, "%-50s %6lu %6lu %7lu  %-35s  %s\n",
-                     name ? name : "[System]",
-                     HandleToUlong(system_proc_info->UniqueProcessId),
-                     HandleToUlong(system_proc_info->InheritedFromUniqueProcessId),
-                     (ULONG)system_proc_info->SessionId,
-                     user ? user : "N/A",
-                     IsWow64 ? "x86" : "x64");
+        BeaconFormatPrintf(&output_buf, "%-50s %6lu %6lu %7lu  %-35s  %s\n",
+                           name ? name : "[System]",
+                           HandleToUlong(system_proc_info->UniqueProcessId),
+                           HandleToUlong(system_proc_info->InheritedFromUniqueProcessId),
+                           (ULONG)system_proc_info->SessionId,
+                           user ? user : "N/A",
+                           IsWow64 ? "x86" : "x64");
 
         if (name) MSVCRT$free(name);
         if (user) MSVCRT$free(user);
@@ -157,6 +160,11 @@ void go(char *args, int len) {
         system_proc_info = (SYSTEM_PROCESS_INFORMATION*)((UINT_PTR)system_proc_info + system_proc_info->NextEntryOffset);
 
     } while (1);
+
+    int out_len = 0;
+    char *out = BeaconFormatToString(&output_buf, &out_len);
+    BeaconOutput(CALLBACK_OUTPUT, out, out_len);
+    BeaconFormatFree(&output_buf);
 
     MSVCRT$free(base_sysproc);
 }

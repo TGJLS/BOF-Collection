@@ -17,9 +17,9 @@ cmd_ps_kill.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let bof_path = ax.script_dir() + "_bin/kill." + ax.arch(id) + ".o";
     let bof_params;
     if (parsed_json["exit_code"] !== undefined && parsed_json["exit_code"] !== null) {
-        bof_params = ax.bof_pack("int32,int32", [pid, parsed_json["exit_code"]]);
+        bof_params = ax.bof_pack("int,int", [pid, parsed_json["exit_code"]]);
     } else {
-        bof_params = ax.bof_pack("int32,int32", [pid, 1]);
+        bof_params = ax.bof_pack("int,int", [pid, 1]);
     }
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps kill");
 });
@@ -49,7 +49,7 @@ cmd_ps_run.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     if (token && token !== 0) { method = 2; }
     else if (domain || user || pass) { method = 1; }
 
-    let bof_params = ax.bof_pack("int32,wstr,int32,int32,int32,wstr,wstr,wstr,int32",
+    let bof_params = ax.bof_pack("int,wstr,int,int,int,wstr,wstr,wstr,int",
                                   [method, cmd, state, pipe, ppid, domain, user, pass, token]);
     let bof_path = ax.script_dir() + "_bin/run." + ax.arch(id) + ".o";
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps run");
@@ -60,7 +60,7 @@ cmd_ps_grep.addArgInt("pid", true);
 cmd_ps_grep.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid        = parsed_json["pid"];
     let bof_path   = ax.script_dir() + "_bin/grep." + ax.arch(id) + ".o";
-    let bof_params = ax.bof_pack("int32", [pid]);
+    let bof_params = ax.bof_pack("int", [pid]);
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps grep");
 });
 
@@ -69,7 +69,7 @@ cmd_ps_suspend.addArgInt("pid", true);
 cmd_ps_suspend.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid        = parsed_json["pid"];
     let bof_path   = ax.script_dir() + "_bin/suspend." + ax.arch(id) + ".o";
-    let bof_params = ax.bof_pack("int32", [pid]);
+    let bof_params = ax.bof_pack("int", [pid]);
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps suspend");
 });
 
@@ -78,7 +78,7 @@ cmd_ps_resume.addArgInt("pid", true);
 cmd_ps_resume.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid        = parsed_json["pid"];
     let bof_path   = ax.script_dir() + "_bin/resume." + ax.arch(id) + ".o";
-    let bof_params = ax.bof_pack("int32", [pid]);
+    let bof_params = ax.bof_pack("int", [pid]);
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps resume");
 });
 

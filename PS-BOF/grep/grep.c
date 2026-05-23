@@ -72,9 +72,8 @@ static void get_tokens(HANDLE process_handle) {
             status = NTDLL$NtQueryInformationToken(token_handle, TokenIntegrityLevel,
                 integrity, return_len, &return_len);
             if (NT_SUCCESS(status)) {
-                ULONG level = *GetSidSubAuthority(
-                    integrity->Label.Sid,
-                    (DWORD)(UCHAR)(*GetSidSubAuthorityCount(integrity->Label.Sid) - 1));
+                SID  *isid  = (SID*)integrity->Label.Sid;
+                ULONG level = isid->SubAuthority[isid->SubAuthorityCount - 1];
                 const char *lvl_str = "Untrusted";
                 if      (level >= SECURITY_MANDATORY_SYSTEM_RID) lvl_str = "System";
                 else if (level >= SECURITY_MANDATORY_HIGH_RID)   lvl_str = "High";
@@ -195,9 +194,14 @@ void go(char *args, int len) {
     process_handle = KERNEL32$OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
                                            FALSE, (DWORD)pid);
     if (!process_handle) {
-        BeaconPrintf(CALLBACK_ERROR, "ps grep: OpenProcess failed for PID %d (error %d)\n",
-                     pid, KERNEL32$GetLastError());
-        return;
+        DWORD open_err = KERNEL32$GetLastError();
+        process_handle = KERNEL32$OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
+                                               FALSE, (DWORD)pid);
+        if (!process_handle) {
+            BeaconPrintf(CALLBACK_ERROR, "ps grep: OpenProcess failed for PID %d (error %d)\n",
+                         pid, open_err);
+            return;
+        }
     }
 
     get_tokens(process_handle);
