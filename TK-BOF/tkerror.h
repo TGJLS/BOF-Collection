@@ -6,6 +6,9 @@
 
 static inline void TkErrorMessage(DWORD dwError, char *buf, int bufSize)
 {
+	if (!buf || bufSize <= 0)
+		return;
+
 	char  *sysBuf = NULL;
 	DWORD  ret    = 0;
 	int    i      = 0;

@@ -4,14 +4,14 @@ milestone: v1.6
 milestone_name: TK-BOF
 status: executing
 stopped_at: Phase 30 context gathered
-last_updated: "2026-05-23T15:40:18.646Z"
-last_activity: 2026-05-23 -- Phase 29 execution started
+last_updated: "2026-05-23T15:58:42.571Z"
+last_activity: 2026-05-23 -- Phase 30 execution started
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 1
+  total_plans: 3
   completed_plans: 1
-  percent: 100
+  percent: 33
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-23)
 
 **Core value:** Operators can perform common filesystem and process-control operations directly through BOFs without dropping to cmd.exe or PowerShell — minimizing detection surface
-**Current focus:** Phase 29 — TK-BOF Setup
+**Current focus:** Phase 30 — core-token-bofs
 
 ## Current Position
 
-Phase: 29 (TK-BOF Setup) — EXECUTING
-Plan: 1 of 1
-Status: Executing Phase 29
-Last activity: 2026-05-23 -- Phase 29 execution started
+Phase: 30 (core-token-bofs) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 30
+Last activity: 2026-05-23 -- Phase 30 execution started
 
 ```
 Progress: Phase 0/5 complete

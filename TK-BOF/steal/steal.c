@@ -61,10 +61,10 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
             NTDLL$NtClose(hDup);
             return;
         }
-        BeaconPrintf(CALLBACK_OUTPUT, "[+] Handle: 0x%lx\n", (ULONG_PTR) hDup);
+        BeaconPrintf(CALLBACK_OUTPUT, "[+] Handle: 0x%llx\n", (unsigned long long) hDup);
     }
     else
     {
-        BeaconPrintf(CALLBACK_OUTPUT, "[+] Handle: 0x%lx (impersonation not applied)\n", (ULONG_PTR) hDup);
+        BeaconPrintf(CALLBACK_OUTPUT, "[+] Handle: 0x%llx (impersonation not applied)\n", (unsigned long long) hDup);
     }
 }

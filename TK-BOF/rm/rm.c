@@ -18,5 +18,5 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
         return;
     }
 
-    BeaconPrintf(CALLBACK_OUTPUT, "[+] Handle 0x%lx closed.\n", (ULONG_PTR) token_handle);
+    BeaconPrintf(CALLBACK_OUTPUT, "[+] Handle 0x%llx closed.\n", (unsigned long long) token_handle);
 }

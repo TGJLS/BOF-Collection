@@ -20,5 +20,5 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
         return;
     }
 
-    BeaconPrintf(CALLBACK_OUTPUT, "[+] Impersonating handle 0x%lx\n", (ULONG_PTR) token_handle);
+    BeaconPrintf(CALLBACK_OUTPUT, "[+] Impersonating handle 0x%llx\n", (unsigned long long) token_handle);
 }
