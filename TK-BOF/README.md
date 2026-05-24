@@ -2,6 +2,15 @@
 
 Token management: steal, use, make, rm, revert, privget
 
+|Commands|Usage|Notes|
+|--------|-----|-----|
+|steal|`tk steal <pid>`|Duplicate a process token; optionally skip impersonation with `--no-apply`|
+|use|`tk use <token_handle>`|Impersonate a previously obtained token handle|
+|make|`tk make <username> <password>`|Create a token via LogonUserW; supports `--domain`, `--logon-type`, `--no-apply`|
+|rm|`tk rm <token_handle>`|Close a token handle and free the kernel object|
+|revert|`tk revert`|Drop impersonation and revert to process token|
+|privget|`tk privget`|Enable all privileges on the current token|
+
 ## Handle Lifecycle
 
 tk rm <handle> closes the kernel object — the handle is gone and cannot be reused. tk revert drops impersonation but keeps handles alive — the token can be re-activated with tk use. Always tk rm handles you no longer need to avoid leaking kernel objects in the beacon process.
@@ -57,3 +66,7 @@ Enable all privileges on the current token by iterating the token's privilege se
 ```
 tk privget
 ```
+
+## Credits
+
+- [Kharon](https://github.com/entropy-z/Kharon): TK-BOF command implementations
