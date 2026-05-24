@@ -18,7 +18,7 @@ WINBASEAPI BOOL WINAPI ADVAPI32$RevertToSelf(VOID);
 // =============================================================================
 // ADVAPI32 — credential-based token creation
 // =============================================================================
-WINBASEAPI BOOL WINAPI ADVAPI32$LogonUserA(LPCSTR lpszUsername, LPCSTR lpszDomain, LPCSTR lpszPassword, DWORD dwLogonType, DWORD dwLogonProvider, PHANDLE phToken);
+WINBASEAPI BOOL WINAPI ADVAPI32$LogonUserW(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, DWORD dwLogonType, DWORD dwLogonProvider, PHANDLE phToken);
 
 // =============================================================================
 // ADVAPI32 — token introspection and modification
