@@ -27,6 +27,17 @@ WINBASEAPI BOOL WINAPI ADVAPI32$GetTokenInformation(HANDLE TokenHandle, TOKEN_IN
 WINBASEAPI BOOL WINAPI ADVAPI32$AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAllPrivileges, PTOKEN_PRIVILEGES NewState, DWORD BufferLength, PTOKEN_PRIVILEGES PreviousState, PDWORD ReturnLength);
 
 // =============================================================================
+// ADVAPI32 — thread token
+// =============================================================================
+WINBASEAPI BOOL WINAPI ADVAPI32$OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess, BOOL OpenAsSelf, PHANDLE TokenHandle);
+
+// =============================================================================
+// KERNEL32 — pseudo-handles
+// =============================================================================
+WINBASEAPI HANDLE WINAPI KERNEL32$GetCurrentThread(VOID);
+WINBASEAPI HANDLE WINAPI KERNEL32$GetCurrentProcess(VOID);
+
+// =============================================================================
 // NTDLL — handle close (rm BOF uses NtClose to close token handle)
 // =============================================================================
 WINBASEAPI NTSTATUS NTAPI NTDLL$NtClose(HANDLE Handle);
