@@ -61,6 +61,20 @@ Terminate the beacon process or thread. [More details](Exit-BOF/README.md)
 |exit process|`exit process`|Terminate beacon process via `RtlExitUserProcess(0)`. Terminal.|
 |exit thread|`exit thread`|Terminate beacon thread via `RtlExitUserThread(0)`. Terminal.|
 
+## PS-BOF
+
+Process management: ps list, ps kill, ps run, ps grep, ps suspend, ps resume. [More details](PS-BOF/README.md)
+
+|Commands|Usage|Notes|
+|--------|-----|-----|
+|ps list|`ps list`|List all running processes (PID, PPID, session, owner, arch)|
+|ps kill|`ps kill <PID> [exit_code]`|Terminate a process; optional exit code|
+|ps run|`ps run --command <cmd> [--pipe] [--ppid <PID>] [--state suspended] [--domain <domain> --username <user> --password <pass>] [--token <handle>]`|Launch a process (CreateProcess/WithLogon/WithToken); optional PPID spoofing and pipe capture|
+|ps grep|`ps grep <PID>`|Inspect a process: token, modules, cmdline, threads|
+|ps suspend|`ps suspend <PID>`|Suspend a process|
+|ps resume|`ps resume <PID>`|Resume a suspended process|
+
 ## Credits
 
 - [Extension-Kit](https://github.com/Adaptix-Framework/Extension-Kit): Project structure and README
+- [Kharon](https://github.com/entropy-z/Kharon): PS-BOF command implementations
