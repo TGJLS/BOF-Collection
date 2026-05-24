@@ -130,7 +130,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 **Wave 1**
-- [ ] 31-01-PLAN.md — Add 3 missing declarations to TK-BOF/bofdefs.h; implement make.c (LogonUserA + optional ImpersonateLoggedOnUser + handle print)
+- [x] 31-01-PLAN.md — Add 3 missing declarations to TK-BOF/bofdefs.h; implement make.c (LogonUserA + optional ImpersonateLoggedOnUser + handle print)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 31-02-PLAN.md — Implement privget.c (OpenThreadToken/OpenProcessToken fallback, two-pass GetTokenInformation, AdjustTokenPrivileges with ERROR_NOT_ALL_ASSIGNED warning)
@@ -183,6 +183,6 @@ Plans:
 | 28. CI/CD Tests | v1.5 | 2/2 | Complete | 2026-05-22 |
 | 29. TK-BOF Setup | v1.6 | 1/1 | Complete   | 2026-05-23 |
 | 30. Core Token BOFs | v1.6 | 2/2 | Complete   | 2026-05-23 |
-| 31. tk make + tk privget | v1.6 | 0/2 | Not started | — |
+| 31. tk make + tk privget | v1.6 | 1/2 | In Progress|  |
 | 32. tk.axs + Documentation | v1.6 | 0/1 | Not started | — |
 | 33. CI/CD Tests | v1.6 | 0/1 | Not started | — |
