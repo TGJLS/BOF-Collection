@@ -82,7 +82,7 @@ See [v1.5 archive](milestones/v1.5-ROADMAP.md) for full phase details.
 - [x] **Phase 29: TK-BOF Setup** — Build skeleton: directory layout, Makefile (x64+x32), bofdefs.h with ADVAPI32$/NTDLL$ dynamic resolution declarations (completed 2026-05-23)
 - [x] **Phase 30: Core Token BOFs** — tk steal, tk use, tk rm, tk revert (steal/impersonate/close/revert token operations) (completed 2026-05-23)
 - [x] **Phase 31: tk make + tk privget** — LogonUser credential token creation and AdjustTokenPrivileges privilege elevation (completed 2026-05-24)
-- [ ] **Phase 32: tk.axs + Documentation** — Subcommand wiring, TK-BOF README, root README update
+- [x] **Phase 32: tk.axs + Documentation** — Subcommand wiring, TK-BOF README, root README update (completed 2026-05-24)
 - [ ] **Phase 33: CI/CD Tests** — tasks.yaml entries and test.yaml deploy block for TK-BOF
 
 ## Phase Details
@@ -147,11 +147,11 @@ Plans:
 **UI hint**: no
 Plans:
 **Wave 1**
-- [ ] 32-01-PLAN.md — Merge origin/main (PS-BOF reconciliation) + convert TK-BOF/make/make.c to LogonUserW with WCHAR* args and update TK-BOF/bofdefs.h
+- [x] 32-01-PLAN.md — Merge origin/main (PS-BOF reconciliation) + convert TK-BOF/make/make.c to LogonUserW with WCHAR* args and update TK-BOF/bofdefs.h
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 32-02-PLAN.md — Create TK-BOF/tk.axs registering all 6 subcommands beacon-only + add TK-BOF script_load to bof-collection.axs
-- [ ] 32-03-PLAN.md — Write TK-BOF/README.md (handle lifecycle + per-command sections) and update root README.md (## TK-BOF table + extended Kharon credit)
+- [x] 32-02-PLAN.md — Create TK-BOF/tk.axs registering all 6 subcommands beacon-only + add TK-BOF script_load to bof-collection.axs
+- [x] 32-03-PLAN.md — Write TK-BOF/README.md (handle lifecycle + per-command sections) and update root README.md (## TK-BOF table + extended Kharon credit)
 
 ### Phase 33: CI/CD Tests
 **Goal**: TK-BOF operations are covered by automated CI test entries
@@ -191,5 +191,5 @@ Plans:
 | 29. TK-BOF Setup | v1.6 | 1/1 | Complete   | 2026-05-23 |
 | 30. Core Token BOFs | v1.6 | 2/2 | Complete   | 2026-05-23 |
 | 31. tk make + tk privget | v1.6 | 2/2 | Complete   | 2026-05-24 |
-| 32. tk.axs + Documentation | v1.6 | 0/3 | Not started | — |
+| 32. tk.axs + Documentation | v1.6 | 3/3 | Complete   | 2026-05-24 |
 | 33. CI/CD Tests | v1.6 | 0/1 | Not started | — |
