@@ -22,6 +22,12 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
     no_apply   = (BOOL) BeaconDataInt(&parser);
     logon_type = (int)  BeaconDataInt(&parser);
 
+    if (!username || !password)
+    {
+        BeaconPrintf(CALLBACK_ERROR, "[-] make: missing username or password argument\n");
+        return;
+    }
+
     if (logon_type == 0) logon_type = 9;
     const char *dom = (domain && domain[0]) ? domain : ".";
 

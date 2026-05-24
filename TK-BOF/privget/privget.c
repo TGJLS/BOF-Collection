@@ -13,11 +13,19 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
     DWORD            i            = 0;
     DWORD            privCount    = 0;
 
-    /* Open thread token first; silent fallback to process token if not impersonating */
+    /* Open thread token; fall back to process token only when thread has no token */
     if (!ADVAPI32$OpenThreadToken(KERNEL32$GetCurrentThread(),
                                   TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES,
                                   TRUE, &hToken))
     {
+        dwError = KERNEL32$GetLastError();
+        if (dwError != ERROR_NO_TOKEN)
+        {
+            TkErrorMessage(dwError, errMsg, sizeof(errMsg));
+            BeaconPrintf(CALLBACK_ERROR, "[-] privget: OpenThreadToken failed: %s\n", errMsg);
+            return;
+        }
+        dwError = 0;
         if (!ADVAPI32$OpenProcessToken(KERNEL32$GetCurrentProcess(),
                                        TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES,
                                        &hToken))
@@ -65,15 +73,20 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
     KERNEL32$HeapFree(KERNEL32$GetProcessHeap(), 0, pTokPriv);
     NTDLL$NtClose(hToken);
 
-    if (dwError != 0 && dwError != 1300)
+    if (dwError != 0 && dwError != ERROR_NOT_ALL_ASSIGNED)
     {
         TkErrorMessage(dwError, errMsg, sizeof(errMsg));
         BeaconPrintf(CALLBACK_ERROR, "[-] privget: AdjustTokenPrivileges failed: %s\n", errMsg);
         return;
     }
 
-    if (dwError == 1300)
+    if (dwError == ERROR_NOT_ALL_ASSIGNED)
+    {
         BeaconPrintf(CALLBACK_OUTPUT, "[!] privget: not all privileges could be enabled.\n");
-
-    BeaconPrintf(CALLBACK_OUTPUT, "[+] Enabled %lu privileges.\n", (unsigned long) privCount);
+        BeaconPrintf(CALLBACK_OUTPUT, "[+] Attempted %lu privileges (partial).\n", (unsigned long) privCount);
+    }
+    else
+    {
+        BeaconPrintf(CALLBACK_OUTPUT, "[+] Enabled %lu privileges.\n", (unsigned long) privCount);
+    }
 }
