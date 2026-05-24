@@ -81,7 +81,7 @@ See [v1.5 archive](milestones/v1.5-ROADMAP.md) for full phase details.
 
 - [x] **Phase 29: TK-BOF Setup** — Build skeleton: directory layout, Makefile (x64+x32), bofdefs.h with ADVAPI32$/NTDLL$ dynamic resolution declarations (completed 2026-05-23)
 - [x] **Phase 30: Core Token BOFs** — tk steal, tk use, tk rm, tk revert (steal/impersonate/close/revert token operations) (completed 2026-05-23)
-- [ ] **Phase 31: tk make + tk privget** — LogonUser credential token creation and AdjustTokenPrivileges privilege elevation
+- [x] **Phase 31: tk make + tk privget** — LogonUser credential token creation and AdjustTokenPrivileges privilege elevation (completed 2026-05-24)
 - [ ] **Phase 32: tk.axs + Documentation** — Subcommand wiring, TK-BOF README, root README update
 - [ ] **Phase 33: CI/CD Tests** — tasks.yaml entries and test.yaml deploy block for TK-BOF
 
@@ -133,7 +133,7 @@ Plans:
 - [x] 31-01-PLAN.md — Add 3 missing declarations to TK-BOF/bofdefs.h; implement make.c (LogonUserA + optional ImpersonateLoggedOnUser + handle print)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 31-02-PLAN.md — Implement privget.c (OpenThreadToken/OpenProcessToken fallback, two-pass GetTokenInformation, AdjustTokenPrivileges with ERROR_NOT_ALL_ASSIGNED warning)
+- [x] 31-02-PLAN.md — Implement privget.c (OpenThreadToken/OpenProcessToken fallback, two-pass GetTokenInformation, AdjustTokenPrivileges with ERROR_NOT_ALL_ASSIGNED warning)
 
 ### Phase 32: tk.axs + Documentation
 **Goal**: All 6 tk subcommands are registered in Adaptix and documentation is complete
@@ -183,6 +183,6 @@ Plans:
 | 28. CI/CD Tests | v1.5 | 2/2 | Complete | 2026-05-22 |
 | 29. TK-BOF Setup | v1.6 | 1/1 | Complete   | 2026-05-23 |
 | 30. Core Token BOFs | v1.6 | 2/2 | Complete   | 2026-05-23 |
-| 31. tk make + tk privget | v1.6 | 1/2 | In Progress|  |
+| 31. tk make + tk privget | v1.6 | 2/2 | Complete   | 2026-05-24 |
 | 32. tk.axs + Documentation | v1.6 | 0/1 | Not started | — |
 | 33. CI/CD Tests | v1.6 | 0/1 | Not started | — |
