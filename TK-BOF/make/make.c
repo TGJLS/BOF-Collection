@@ -6,9 +6,9 @@
 VOID go(IN PCHAR Buffer, IN ULONG Length)
 {
     datap parser;
-    char *username = NULL;
-    char *password = NULL;
-    char *domain   = NULL;
+    WCHAR *username = NULL;
+    WCHAR *password = NULL;
+    WCHAR *domain   = NULL;
     BOOL  no_apply = FALSE;
     int   logon_type = 0;
     HANDLE hToken  = NULL;
@@ -16,9 +16,9 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
     char   errMsg[256];
 
     BeaconDataParse(&parser, Buffer, Length);
-    username   = BeaconDataExtract(&parser, NULL);
-    password   = BeaconDataExtract(&parser, NULL);
-    domain     = BeaconDataExtract(&parser, NULL);
+    username   = (WCHAR*) BeaconDataExtract(&parser, NULL);
+    password   = (WCHAR*) BeaconDataExtract(&parser, NULL);
+    domain     = (WCHAR*) BeaconDataExtract(&parser, NULL);
     no_apply   = (BOOL) BeaconDataInt(&parser);
     logon_type = (int)  BeaconDataInt(&parser);
 
@@ -29,13 +29,13 @@ VOID go(IN PCHAR Buffer, IN ULONG Length)
     }
 
     if (logon_type == 0) logon_type = 9;
-    const char *dom = (domain && domain[0]) ? domain : ".";
+    const WCHAR *dom = (domain && domain[0]) ? domain : L".";
 
-    if (!ADVAPI32$LogonUserA(username, dom, password, (DWORD)logon_type, LOGON32_PROVIDER_DEFAULT, &hToken))
+    if (!ADVAPI32$LogonUserW(username, dom, password, (DWORD)logon_type, LOGON32_PROVIDER_DEFAULT, &hToken))
     {
         dwError = KERNEL32$GetLastError();
         TkErrorMessage(dwError, errMsg, sizeof(errMsg));
-        BeaconPrintf(CALLBACK_ERROR, "[-] make: LogonUserA failed: %s\n", errMsg);
+        BeaconPrintf(CALLBACK_ERROR, "[-] make: LogonUserW failed: %s\n", errMsg);
         return;
     }
 
