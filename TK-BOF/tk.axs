@@ -65,4 +65,5 @@ var cmd_tk = ax.create_command("tk", "Token management: steal, use, make, rm, re
 cmd_tk.addSubCommands([cmd_tk_steal, cmd_tk_use, cmd_tk_make, cmd_tk_rm, cmd_tk_revert, cmd_tk_privget]);
 
 var group_tk = ax.create_commands_group("TK-BOF", [cmd_tk]);
+// beacon-only: token impersonation BOFs are only meaningful inside beacon agents
 ax.register_commands_group(group_tk, ["beacon"], ["windows"], []);
