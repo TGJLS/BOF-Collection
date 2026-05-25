@@ -54,6 +54,16 @@ jobs:
       - name: Create tk_test user
         shell: powershell
         run: |
+          # Relax local password policy so the hardcoded test credential is accepted
+          # on runners with non-default minimum-length or complexity settings.
+          $cfgPath = "$env:TEMP\secpol.cfg"
+          secedit /export /cfg $cfgPath /quiet
+          (Get-Content $cfgPath) `
+            -replace 'PasswordComplexity\s*=\s*1', 'PasswordComplexity = 0' `
+            -replace 'MinimumPasswordLength\s*=\s*\d+', 'MinimumPasswordLength = 0' |
+            Set-Content $cfgPath
+          secedit /configure /db "$env:windir\security\local.sdb" /cfg $cfgPath /areas SECURITYPOLICY /quiet
+          Remove-Item $cfgPath -Force -ErrorAction SilentlyContinue
           $pass = ConvertTo-SecureString 'Tk_Test_Pass1!' -AsPlainText -Force
           if (-not (Get-LocalUser tk_test -ErrorAction SilentlyContinue)) {
             New-LocalUser tk_test -Password $pass -PasswordNeverExpires
