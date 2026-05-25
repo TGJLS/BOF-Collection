@@ -15,9 +15,9 @@ cmd_tk_steal.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
 });
 
 var cmd_tk_use = ax.create_command("use", "Impersonate a previously obtained token handle", "tk use <token_handle>");
-cmd_tk_use.addArgInt("token_handle", true);
+cmd_tk_use.addArgString("token_handle", true);
 cmd_tk_use.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
-    let token_handle = parsed_json["token_handle"];
+    let token_handle = parseInt(parsed_json["token_handle"], 16);
     let bof_params = ax.bof_pack("int", [token_handle]);
     let bof_path = ax.script_dir() + "_bin/use." + ax.arch(id) + ".o";
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: tk use");
@@ -41,9 +41,9 @@ cmd_tk_make.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
 });
 
 var cmd_tk_rm = ax.create_command("rm", "Close a token handle and free the kernel object", "tk rm <token_handle>");
-cmd_tk_rm.addArgInt("token_handle", true);
+cmd_tk_rm.addArgString("token_handle", true);
 cmd_tk_rm.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
-    let token_handle = parsed_json["token_handle"];
+    let token_handle = parseInt(parsed_json["token_handle"], 16);
     let bof_params = ax.bof_pack("int", [token_handle]);
     let bof_path = ax.script_dir() + "_bin/rm." + ax.arch(id) + ".o";
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: tk rm");
