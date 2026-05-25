@@ -267,6 +267,9 @@ jobs:
               mkdir -p /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/_bin
               cp /workspace/PS-BOF/_bin/*.o /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/_bin/
               cp /workspace/PS-BOF/ps.axs /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/
+              mkdir -p /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/_bin
+              cp /workspace/TK-BOF/_bin/*.o /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/_bin/
+              cp /workspace/TK-BOF/tk.axs /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/
               cp /workspace/bof-collection.axs /tmp/adaptixc2/dist/BOF-Collection/
 
               # ── Build verification ───────────────────────────────────────
@@ -283,6 +286,12 @@ jobs:
               count=$(ls /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/_bin/*.x64.o | wc -l)
               [ "$count" -eq 6 ] && echo "✓ All 6 PS-BOF x64 objects deployed to container" || \
                 { echo "✗ Expected 6 PS-BOF x64 objects in container bin, got $count"; exit 1; }
+              count=$(ls /workspace/TK-BOF/_bin/*.x64.o | wc -l)
+              [ "$count" -eq 6 ] && echo "✓ All 6 TK-BOF x64 objects compiled" || \
+                { echo "✗ Expected 6 TK-BOF x64 objects, got $count"; exit 1; }
+              count=$(ls /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/_bin/*.x64.o | wc -l)
+              [ "$count" -eq 6 ] && echo "✓ All 6 TK-BOF x64 objects deployed to container" || \
+                { echo "✗ Expected 6 TK-BOF x64 objects in container bin, got $count"; exit 1; }
               echo "=== Build verification passed ==="
 
               uv tool install --reinstall "git+https://github.com/TheGr3atJosh/Testing-Kit@c53a47d"
