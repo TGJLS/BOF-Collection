@@ -203,3 +203,47 @@ tasks:
   # ps-kill (CI-02)
   - cmdline: "ps kill {{pid}}"
     not_expected: "error"
+
+  # ── TK-BOF ──
+
+  # tk-spawn-fixture (D-01, D-02)
+  - cmdline: 'ps run --command "ping -n 999 127.0.0.1"'
+    expected_regex: "Process started: PID \\d+"
+    capture:
+      tk_pid: "Process started: PID (\\d+)"
+
+  # tk-steal-immediate (D-03)
+  - cmdline: "tk steal {{tk_pid}}"
+    expected_regex: "\\[\\+\\] Handle: 0x[0-9a-fA-F]+"
+    not_expected: "error"
+
+  # tk-revert-after-steal (D-03)
+  - cmdline: "tk revert"
+    expected: "[+] Reverted to process token."
+
+  # tk-steal-noapply (D-04)
+  - cmdline: "tk steal {{tk_pid}} --no-apply"
+    expected_regex: "\\[\\+\\] Handle: 0x[0-9a-fA-F]+ \\(impersonation not applied\\)"
+    capture:
+      tk_handle: "Handle: 0x([0-9a-fA-F]+)"
+
+  # tk-use (D-04)
+  - cmdline: "tk use {{tk_handle}}"
+    expected_regex: "\\[\\+\\] Impersonating handle 0x[0-9a-fA-F]+"
+
+  # tk-rm (D-04)
+  - cmdline: "tk rm {{tk_handle}}"
+    expected_regex: "\\[\\+\\] Handle 0x[0-9a-fA-F]+ closed\\."
+
+  # tk-make (D-08)
+  - cmdline: "tk make --username tk_test --password Tk_Test_Pass1!"
+    expected_regex: "\\[\\+\\] Handle: 0x[0-9a-fA-F]+"
+    not_expected: "error"
+
+  # tk-revert-after-make (D-09)
+  - cmdline: "tk revert"
+    expected: "[+] Reverted to process token."
+
+  # tk-privget (D-10)
+  - cmdline: "tk privget"
+    not_expected: "error"
