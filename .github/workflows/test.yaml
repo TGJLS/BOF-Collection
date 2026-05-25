@@ -51,6 +51,16 @@ jobs:
             Set-LocalUser $env:CI_USER -Password $pass
           }
 
+      - name: Create tk_test user
+        shell: powershell
+        run: |
+          $pass = ConvertTo-SecureString 'Tk_Test_Pass1!' -AsPlainText -Force
+          if (-not (Get-LocalUser tk_test -ErrorAction SilentlyContinue)) {
+            New-LocalUser tk_test -Password $pass -PasswordNeverExpires
+          } else {
+            Set-LocalUser tk_test -Password $pass
+          }
+
       - name: Start OpenSSH Server with password auth
         shell: powershell
         run: |
