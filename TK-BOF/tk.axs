@@ -66,4 +66,4 @@ cmd_tk.addSubCommands([cmd_tk_steal, cmd_tk_use, cmd_tk_make, cmd_tk_rm, cmd_tk_
 
 var group_tk = ax.create_commands_group("TK-BOF", [cmd_tk]);
 // beacon-only: token impersonation BOFs are only meaningful inside beacon agents
-ax.register_commands_group(group_tk, ["beacon"], ["windows"], []);
+ax.register_commands_group(group_tk, ["beacon", "gopher", "kharon"], ["windows"], []);
