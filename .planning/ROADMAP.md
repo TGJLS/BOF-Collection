@@ -88,23 +88,28 @@ See [v1.5 archive](milestones/v1.5-ROADMAP.md) for full phase details.
 ## Phase Details
 
 ### Phase 29: TK-BOF Setup
+
 **Goal**: The TK-BOF build skeleton exists and all 12 targets (x64+x32 for 6 commands) compile cleanly
 **Depends on**: Phase 28 (v1.5 complete)
 **Requirements**: TK-07
 **Success Criteria** (what must be TRUE):
+
   1. `TK-BOF/` directory exists with one subdirectory per command (steal, use, make, rm, revert, privget)
   2. `TK-BOF/Makefile` builds all 12 targets (6 commands x x64+x32) with zero errors
   3. `TK-BOF/bofdefs.h` declares ADVAPI32$ and NTDLL$ dynamic resolution for all token-related Win32 APIs used across the 6 BOFs
   4. `make` in `TK-BOF/` produces `.o` files for all 12 targets with no `[!]` failures
 **Plans**: 1 plan
 Plans:
+
 - [x] 29-01-PLAN.md — Create TK-BOF bofdefs.h contracts, 6 silent stubs with arg scaffolding, Makefile (12 targets), wire root SUBDIRS
 
 ### Phase 30: Core Token BOFs
+
 **Goal**: Operators can steal, impersonate, close, and revert tokens through the beacon
 **Depends on**: Phase 29
 **Requirements**: TK-01, TK-02, TK-04, TK-05
 **Success Criteria** (what must be TRUE):
+
   1. Operator runs `tk steal <pid>` and receives a token handle value printed to beacon output; impersonation is immediately active
   2. Operator runs `tk steal <pid> --no-apply` and receives a handle value without impersonation being applied
   3. Operator runs `tk use <handle>` with a previously printed handle and impersonation switches to that token
@@ -113,16 +118,20 @@ Plans:
 **Plans**: 2 plans
 Plans:
 **Wave 1**
+
 - [x] 30-01-PLAN.md — Create TK-BOF/tkerror.h helper; implement steal.c (OpenProcess → OpenProcessToken → DuplicateTokenEx → optional ImpersonateLoggedOnUser, with handle-leak cleanup)
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 30-02-PLAN.md — Implement use.c (ImpersonateLoggedOnUser + TkErrorMessage), rm.c (NtClose + raw NTSTATUS hex), revert.c (RevertToSelf, no error branch)
 
 ### Phase 31: tk make + tk privget
+
 **Goal**: Operators can create tokens from credentials and enable all privileges on the current token
 **Depends on**: Phase 30
 **Requirements**: TK-03, TK-06
 **Success Criteria** (what must be TRUE):
+
   1. Operator runs `tk make --username <u> --password <p>` and receives a handle value; impersonation as that user is immediately active
   2. Operator runs `tk make --username <u> --password <p> --domain <d>` and the domain credential is used for LogonUser
   3. Operator runs `tk make --username <u> --password <p> --no-apply` and receives a handle without impersonation being applied
@@ -130,16 +139,20 @@ Plans:
 **Plans**: 2 plans
 Plans:
 **Wave 1**
+
 - [x] 31-01-PLAN.md — Add 3 missing declarations to TK-BOF/bofdefs.h; implement make.c (LogonUserA + optional ImpersonateLoggedOnUser + handle print)
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 31-02-PLAN.md — Implement privget.c (OpenThreadToken/OpenProcessToken fallback, two-pass GetTokenInformation, AdjustTokenPrivileges with ERROR_NOT_ALL_ASSIGNED warning)
 
 ### Phase 32: tk.axs + Documentation
+
 **Goal**: All 6 tk subcommands are registered in Adaptix and documentation is complete
 **Depends on**: Phase 31
 **Requirements**: TK-08, TK-09, TK-10
 **Success Criteria** (what must be TRUE):
+
   1. `tk.axs` registers all 6 subcommands (steal, use, make, rm, revert, privget) beacon-only with correct argument definitions
   2. `TK-BOF/README.md` contains a command table with usage examples for all 6 commands, a handle lifecycle note explaining when to use `tk rm` vs `tk revert`, and Kharon attribution
   3. Root `README.md` includes the TK-BOF category in its BOF table and the Kharon credit is updated to include token management
@@ -147,21 +160,29 @@ Plans:
 **UI hint**: no
 Plans:
 **Wave 1**
+
 - [x] 32-01-PLAN.md — Merge origin/main (PS-BOF reconciliation) + convert TK-BOF/make/make.c to LogonUserW with WCHAR* args and update TK-BOF/bofdefs.h
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 32-02-PLAN.md — Create TK-BOF/tk.axs registering all 6 subcommands beacon-only + add TK-BOF script_load to bof-collection.axs
 - [x] 32-03-PLAN.md — Write TK-BOF/README.md (handle lifecycle + per-command sections) and update root README.md (## TK-BOF table + extended Kharon credit)
 
 ### Phase 33: CI/CD Tests
+
 **Goal**: TK-BOF operations are covered by automated CI test entries
 **Depends on**: Phase 32
 **Requirements**: TK-11, TK-12
 **Success Criteria** (what must be TRUE):
+
   1. `tasks.yaml` contains entries that steal a token from a known process, verify impersonation via `whoami`, revert, create a token with local credentials via `tk make`, and enable privileges via `tk privget`
   2. `test.yaml` deploy block includes the TK-BOF directory so CI builds and deploys TK-BOF artifacts alongside other categories
   3. All new `tasks.yaml` entries pass when run against a live Adaptix beacon
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+**Wave 1**
+
+- [ ] 33-01-PLAN.md — Append TK-BOF block (9 entries) to .github/ci/tasks.yaml and add Create tk_test user PowerShell step to .github/workflows/test.yaml (TK-12 deploy block already shipped in Phase 32)
 
 ## Progress
 
