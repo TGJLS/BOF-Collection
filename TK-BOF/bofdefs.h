@@ -6,36 +6,33 @@
 // =============================================================================
 // ADVAPI32 — token acquisition
 // =============================================================================
-WINBASEAPI BOOL WINAPI ADVAPI32$OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAccess, PHANDLE TokenHandle);
-WINBASEAPI BOOL WINAPI ADVAPI32$DuplicateTokenEx(HANDLE hExistingToken, DWORD dwDesiredAccess, LPSECURITY_ATTRIBUTES lpTokenAttributes, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, TOKEN_TYPE TokenType, PHANDLE phNewToken);
+WINADVAPI BOOL WINAPI ADVAPI32$DuplicateTokenEx(HANDLE hExistingToken, DWORD dwDesiredAccess, LPSECURITY_ATTRIBUTES lpTokenAttributes, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, TOKEN_TYPE TokenType, PHANDLE phNewToken);
 
 // =============================================================================
 // ADVAPI32 — impersonation
 // =============================================================================
-WINBASEAPI BOOL WINAPI ADVAPI32$ImpersonateLoggedOnUser(HANDLE hToken);
-WINBASEAPI BOOL WINAPI ADVAPI32$RevertToSelf(VOID);
+WINADVAPI BOOL WINAPI ADVAPI32$ImpersonateLoggedOnUser(HANDLE hToken);
+WINADVAPI BOOL WINAPI ADVAPI32$RevertToSelf(VOID);
 
 // =============================================================================
 // ADVAPI32 — credential-based token creation
 // =============================================================================
-WINBASEAPI BOOL WINAPI ADVAPI32$LogonUserW(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, DWORD dwLogonType, DWORD dwLogonProvider, PHANDLE phToken);
+WINADVAPI BOOL WINAPI ADVAPI32$LogonUserW(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, DWORD dwLogonType, DWORD dwLogonProvider, PHANDLE phToken);
 
 // =============================================================================
 // ADVAPI32 — token introspection and modification
 // =============================================================================
-WINBASEAPI BOOL WINAPI ADVAPI32$GetTokenInformation(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, LPVOID TokenInformation, DWORD TokenInformationLength, PDWORD ReturnLength);
-WINBASEAPI BOOL WINAPI ADVAPI32$AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAllPrivileges, PTOKEN_PRIVILEGES NewState, DWORD BufferLength, PTOKEN_PRIVILEGES PreviousState, PDWORD ReturnLength);
+WINADVAPI BOOL WINAPI ADVAPI32$GetTokenInformation(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, LPVOID TokenInformation, DWORD TokenInformationLength, PDWORD ReturnLength);
 
 // =============================================================================
 // ADVAPI32 — thread token
 // =============================================================================
-WINBASEAPI BOOL WINAPI ADVAPI32$OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess, BOOL OpenAsSelf, PHANDLE TokenHandle);
+WINADVAPI BOOL WINAPI ADVAPI32$OpenThreadToken(HANDLE ThreadHandle, DWORD DesiredAccess, BOOL OpenAsSelf, PHANDLE TokenHandle);
 
 // =============================================================================
 // KERNEL32 — pseudo-handles
 // =============================================================================
 WINBASEAPI HANDLE WINAPI KERNEL32$GetCurrentThread(VOID);
-WINBASEAPI HANDLE WINAPI KERNEL32$GetCurrentProcess(VOID);
 
 // =============================================================================
 // NTDLL — handle close (rm BOF uses NtClose to close token handle)
