@@ -123,7 +123,7 @@ tasks:
   # copy-wildcard-no-match
   - cmdline: "copy C:\\Temp\\fsbof-test\\*.xyz C:\\Temp\\fsbof-test\\dest\\"
     expected: |
-      C:\Temp\fsbof-test\*.xyz
+      C:\Temp\fsbof-test\*.xyz 
       The system cannot find the file specified.
               0 file(s) copied.
 
