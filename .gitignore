@@ -1,11 +1,6 @@
 _bin
 .vscode
 
-# GSD planning and Claude artifacts
-.planning/
-.claude/
-CLAUDE.md
-
 # macOS
 .DS_Store
 **/.DS_Store
@@ -14,15 +9,3 @@ CLAUDE.md
 *.swp
 *.exe
 *.pdb
-
-# Session notes / handoff docs (README.md kept)
-*.md
-!README.md
-
-# Operator-local files
-/tasks.yaml
-config.yaml
-test.sh
-setup.sh
-ps-reference-output.txt
-test_output.txt
