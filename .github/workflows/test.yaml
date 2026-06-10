@@ -1,8 +1,11 @@
 name: Integration Tests
 
 # Runs on a GitHub-hosted windows-latest runner.
-# WSL2 is initialized and runs Docker daemon natively.
-# The custom published Docker image runs with --network host passthrough.
+# WSL2 runs three containers via Docker daemon:
+#   - extension-kit  builder: built artifacts extracted from image
+#   - adaptixc2      detached server, --network host, BOF-Collection + profile mounted
+#   - testing-kit    runs feature validation + integration tests
+# BOFs are compiled in WSL before container startup.
 # SSH delivery goes from Docker(WSL) → Windows.
 # Beacon callbacks go from Windows → Docker(WSL).
 
@@ -16,7 +19,9 @@ env:
   CI_PASS: Ci_Test_Pass1!
   CI_AGENT_DIR: 'C:\ci'
   CI_AGENT_PATH: 'C:\ci\agent.exe'
-  CI_CONTAINER: 'ghcr.io/thegr3atjosh/adaptix-prebuilt:latest'
+  ADAPTIXC2_IMAGE: ghcr.io/tgjls/adaptixc2:latest
+  EXTENSION_KIT_IMAGE: ghcr.io/tgjls/extension-kit:latest
+  TESTING_KIT_IMAGE: ghcr.io/tgjls/testing-kit:latest
 
 jobs:
   integration-test:
@@ -25,17 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log Windows version
-        shell: powershell
-        run: |
-          Get-WmiObject -Class Win32_OperatingSystem | Select-Object Caption, Version, BuildNumber | Format-List
-          (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -ErrorAction SilentlyContinue).LongPathsEnabled
-
       - name: Pass CI variables into WSL
         shell: powershell
-        run: echo "WSLENV=CI_USER/u:CI_PASS/u:CI_AGENT_PATH:CI_CONTAINER/u" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        run: echo "WSLENV=CI_USER/u:CI_PASS/u:CI_AGENT_PATH/u" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      # ── Windows: CI user, OpenSSH, tmp directory ────────────────────────────
+      # ── Windows: CI user, OpenSSH, tmp directory ─────────────────────────────
       # C:\ci (agent drop dir) and Defender/firewall config are handled by the
       # SSH preamble after connecting — these steps only do what must exist
       # before SSH is available.
@@ -90,35 +89,46 @@ jobs:
         shell: powershell
         run: New-Item -ItemType Directory -Force -Path C:\tmp | Out-Null
 
-      # ── WSL: Ubuntu + Docker ────────────────────────────────────────────────
+      # ── WSL: Ubuntu + Docker + build tools ───────────────────────────────────
 
       - uses: Vampire/setup-wsl@v7
         with:
           distribution: Ubuntu-24.04
-          # Install Docker inside WSL
-          additional-packages: docker.io iproute2 curl
+          additional-packages: >-
+            docker.io iproute2 curl
+            build-essential
+            g++-mingw-w64-x86-64-posix
+            gcc-mingw-w64-x86-64-posix
+            mingw-w64-tools
+            gcc-mingw-w64-i686
+            g++-mingw-w64-i686
 
       - name: Start Docker daemon in WSL
         shell: wsl-bash {0}
         run: |
-          # WSL compatibility for Docker
           sudo update-alternatives --set iptables /usr/sbin/iptables-legacy || true
           sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy || true
-
-          # Start dockerd in the background
           sudo dockerd > /dev/null 2>&1 &
-
-          echo "Waiting for Docker to start..."
+          echo "Waiting for Docker..."
           for i in $(seq 1 30); do
-            if sudo docker info >/dev/null 2>&1; then
-              echo "Docker started successfully."
-              break
-            fi
+            sudo docker info >/dev/null 2>&1 && { echo "Docker ready."; break; }
             sleep 1
           done
           sudo docker info >/dev/null 2>&1 || { echo "Docker failed to start"; exit 1; }
 
-      # ── WSL: SSH setup ───────────────────────────────────────────────────────
+      # ── WSL: Compile BOFs ─────────────────────────────────────────────────────
+
+      - name: Compile BOFs
+        shell: wsl-bash {0}
+        run: |
+          WIN_WS=$(cmd.exe /c "echo %GITHUB_WORKSPACE%" 2>/dev/null | tr -d '\r')
+          WSL_WS=$(wslpath "$WIN_WS")
+          make -C "$WSL_WS"
+          count=$(find "$WSL_WS" -name '*.x64.o' | wc -l)
+          [ "$count" -gt 0 ] || { echo "No .x64.o files produced — build failed silently"; exit 1; }
+          echo "✓ BOFs compiled: $count x64 objects"
+
+      # ── WSL: SSH setup ────────────────────────────────────────────────────────
 
       - name: Generate SSH keypair
         shell: wsl-bash {0}
@@ -134,7 +144,7 @@ jobs:
           Get-Content C:\tmp\ci_key.pub | Add-Content $authFile
           icacls $authFile /inheritance:r /grant "Administrators:F" /grant "SYSTEM:F"
 
-      # ── WSL: config + Execution ──────────────────────────────────────────────
+      # ── WSL: CI config ────────────────────────────────────────────────────────
 
       - name: Write CI config
         shell: wsl-bash {0}
@@ -259,98 +269,112 @@ jobs:
               - 'Set-Content -Path ''C:\Temp\fsbof-test\rmdir-nonempty-target\file.txt'' -Value ''keep'' -Encoding UTF8 -NoNewline'
           EOF
 
-      - name: Pull Adaptix Container
-        shell: wsl-bash {0}
-        run: sudo docker pull "$CI_CONTAINER"
+      # ── WSL: Pull images ──────────────────────────────────────────────────────
 
-      - name: Run CI Container (Server + Tests)
+      - name: Pull CI images
+        shell: wsl-bash {0}
+        run: |
+          sudo docker pull ghcr.io/tgjls/adaptixc2:latest
+          sudo docker pull ghcr.io/tgjls/extension-kit:latest
+          sudo docker pull ghcr.io/tgjls/testing-kit:latest
+
+      # ── WSL: Extract Extension-Kit artifacts ─────────────────────────────────
+
+      - name: Extract Extension-Kit from image
+        shell: wsl-bash {0}
+        run: |
+          CID=$(sudo docker create ghcr.io/tgjls/extension-kit:latest)
+          sudo docker cp "$CID":/src /tmp/ext-src
+          sudo docker rm "$CID"
+
+      # ── WSL: Prepare BOF-Collection artifacts ────────────────────────────────
+
+      - name: Prepare BOF-Collection artifacts
         shell: wsl-bash {0}
         run: |
           WIN_WS=$(cmd.exe /c "echo %GITHUB_WORKSPACE%" 2>/dev/null | tr -d '\r')
           WSL_WS=$(wslpath "$WIN_WS")
 
-          sudo docker run --rm --network host \
-            -v "$WSL_WS:/workspace" \
-            -v ~/.ssh/ci_key:/root/.ssh/ci_key:ro \
+          mkdir -p /tmp/bof-collection/FS-BOF/_bin
+          mkdir -p /tmp/bof-collection/Exit-BOF/_bin
+          mkdir -p /tmp/bof-collection/TK-BOF/_bin
+          mkdir -p /tmp/bof-collection/PS-BOF/_bin
+          mkdir -p /tmp/bof-collection/Postex-BOF/_bin
+
+          cp "$WSL_WS/FS-BOF/_bin/"*.o    /tmp/bof-collection/FS-BOF/_bin/
+          cp "$WSL_WS/FS-BOF/fs.axs"      /tmp/bof-collection/FS-BOF/
+          cp "$WSL_WS/Exit-BOF/_bin/"*.o  /tmp/bof-collection/Exit-BOF/_bin/
+          cp "$WSL_WS/Exit-BOF/exit.axs"  /tmp/bof-collection/Exit-BOF/
+          cp "$WSL_WS/TK-BOF/_bin/"*.o    /tmp/bof-collection/TK-BOF/_bin/
+          cp "$WSL_WS/TK-BOF/tk.axs"      /tmp/bof-collection/TK-BOF/
+          cp "$WSL_WS/PS-BOF/_bin/"*.o    /tmp/bof-collection/PS-BOF/_bin/
+          cp "$WSL_WS/PS-BOF/ps.axs"      /tmp/bof-collection/PS-BOF/
+          cp "$WSL_WS/Postex-BOF/_bin/"*.o   /tmp/bof-collection/Postex-BOF/_bin/
+          cp "$WSL_WS/Postex-BOF/postex.axs" /tmp/bof-collection/Postex-BOF/
+          cp "$WSL_WS/bof-collection.axs" /tmp/bof-collection/
+
+      # ── WSL: Prepare AdaptixC2 profile ────────────────────────────────────────
+
+      - name: Extract and patch profile.yaml to enable Extension-Kit and BOF-Collection
+        shell: wsl-bash {0}
+        run: |
+          CID=$(sudo docker create ghcr.io/tgjls/adaptixc2:latest)
+          sudo docker cp "$CID":/app/profile.yaml /tmp/ci_profile.yaml
+          sudo docker rm "$CID"
+          # Uncomment the Extension-Kit axscript line
+          sed -i 's|#    - "Extension-Kit/extension-kit.axs"|    - "Extension-Kit/extension-kit.axs"|' /tmp/ci_profile.yaml
+          # Append BOF-Collection axscript after the Extension-Kit entry
+          sed -i '/- "Extension-Kit\/extension-kit.axs"/ a\    - "BOF-Collection/bof-collection.axs"' /tmp/ci_profile.yaml
+
+      # ── WSL: Start AdaptixC2 server ───────────────────────────────────────────
+
+      - name: Start AdaptixC2 server
+        shell: wsl-bash {0}
+        run: |
+          sudo docker run -d --name adaptixc2 \
+            --network host \
+            -v /tmp/ext-src:/app/Extension-Kit:ro \
+            -v /tmp/bof-collection:/app/BOF-Collection:ro \
+            -v /tmp/ci_profile.yaml:/app/profile.yaml:ro \
+            ghcr.io/tgjls/adaptixc2:latest
+
+          echo "Waiting for AdaptixC2 (port 4321)..."
+          for i in $(seq 1 60); do
+            (exec 3<>/dev/tcp/127.0.0.1/4321) 2>/dev/null && { echo "Server ready."; break; }
+            sleep 1
+          done
+          (exec 3<>/dev/tcp/127.0.0.1/4321) 2>/dev/null || {
+            echo "=== AdaptixC2 server failed to start within 60s ==="
+            sudo docker logs adaptixc2
+            exit 1
+          }
+
+      # ── WSL: Tests ────────────────────────────────────────────────────────────
+
+      - name: Integration tests
+        shell: wsl-bash {0}
+        run: |
+          WIN_WS=$(cmd.exe /c "echo %GITHUB_WORKSPACE%" 2>/dev/null | tr -d '\r')
+          WSL_WS=$(wslpath "$WIN_WS")
+
+          sudo docker run --rm \
+            --network host \
+            -v "$WSL_WS/.github/ci/tasks.yaml":/tasks.yaml:ro \
             -v /tmp/ci_config.yaml:/tmp/ci_config.yaml:ro \
-            "$CI_CONTAINER" \
-            bash -c '
-              set -e
-              export PATH="/usr/local/bin:/root/.local/bin:$PATH"
+            -v ~/.ssh/ci_key:/root/.ssh/ci_key:ro \
+            ghcr.io/tgjls/testing-kit:latest \
+            -c /tmp/ci_config.yaml -t /tasks.yaml
 
-              # ── BOF rebuild ─────────────────────────────────────────────
-              echo "=== Compiling BOFs ==="
-              make -C /workspace
-              cp /workspace/FS-BOF/_bin/*.o /tmp/adaptixc2/dist/BOF-Collection/FS-BOF/_bin/
-              cp /workspace/FS-BOF/fs.axs /tmp/adaptixc2/dist/BOF-Collection/FS-BOF/fs.axs
-              cp /workspace/Exit-BOF/_bin/*.o /tmp/adaptixc2/dist/BOF-Collection/Exit-BOF/_bin/
-              mkdir -p /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/_bin
-              cp /workspace/PS-BOF/_bin/*.o /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/_bin/
-              cp /workspace/PS-BOF/ps.axs /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/
-              mkdir -p /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/_bin
-              cp /workspace/TK-BOF/_bin/*.o /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/_bin/
-              cp /workspace/TK-BOF/tk.axs /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/
-              cp /workspace/bof-collection.axs /tmp/adaptixc2/dist/BOF-Collection/
+      # ── Cleanup ───────────────────────────────────────────────────────────────
 
-              # ── Build verification ───────────────────────────────────────
-              echo "=== Build verification ==="
-              count=$(ls /workspace/FS-BOF/_bin/*.x64.o | wc -l)
-              [ "$count" -eq 8 ] && echo "✓ All 8 FS-BOF x64 objects compiled" || \
-                { echo "✗ Expected 8 FS-BOF x64 objects, got $count"; exit 1; }
-              count=$(ls /tmp/adaptixc2/dist/BOF-Collection/FS-BOF/_bin/*.x64.o | wc -l)
-              [ "$count" -eq 8 ] && echo "✓ All 8 FS-BOF x64 objects deployed to container" || \
-                { echo "✗ Expected 8 FS-BOF x64 objects in container bin, got $count"; exit 1; }
-              count=$(ls /workspace/PS-BOF/_bin/*.x64.o | wc -l)
-              [ "$count" -eq 6 ] && echo "✓ All 6 PS-BOF x64 objects compiled" || \
-                { echo "✗ Expected 6 PS-BOF x64 objects, got $count"; exit 1; }
-              count=$(ls /tmp/adaptixc2/dist/BOF-Collection/PS-BOF/_bin/*.x64.o | wc -l)
-              [ "$count" -eq 6 ] && echo "✓ All 6 PS-BOF x64 objects deployed to container" || \
-                { echo "✗ Expected 6 PS-BOF x64 objects in container bin, got $count"; exit 1; }
-              count=$(ls /workspace/TK-BOF/_bin/*.x64.o | wc -l)
-              [ "$count" -eq 6 ] && echo "✓ All 6 TK-BOF x64 objects compiled" || \
-                { echo "✗ Expected 6 TK-BOF x64 objects, got $count"; exit 1; }
-              count=$(ls /tmp/adaptixc2/dist/BOF-Collection/TK-BOF/_bin/*.x64.o | wc -l)
-              [ "$count" -eq 6 ] && echo "✓ All 6 TK-BOF x64 objects deployed to container" || \
-                { echo "✗ Expected 6 TK-BOF x64 objects in container bin, got $count"; exit 1; }
-              echo "=== Build verification passed ==="
-
-              uv tool install --reinstall "git+https://github.com/TheGr3atJosh/Testing-Kit@c53a47d"
-
-              # ── Server startup ───────────────────────────────────────────
-              echo "Generating required TLS certificate..."
-              openssl req -x509 -nodes -newkey rsa:2048 \
-                -keyout /tmp/adaptixc2/dist/server.rsa.key \
-                -out /tmp/adaptixc2/dist/server.rsa.crt \
-                -days 1 -subj "/CN=ci" 2>/dev/null
-
-              echo "Starting AdaptixC2 Server..."
-              cd /tmp/adaptixc2/dist
-              ./adaptixserver -profile profile.yaml > /tmp/adaptixserver.log 2>&1 &
-              SERVER_PID=$!
-
-              # Wait up to 60s for the C2 to boot up fully
-              for i in $(seq 1 60); do
-                (exec 3<>/dev/tcp/127.0.0.1/4321) 2>/dev/null && break
-                sleep 1
-              done
-              (exec 3<>/dev/tcp/127.0.0.1/4321) 2>/dev/null || {
-                echo "=== AdaptixC2 server failed to start within 60s ==="
-                cat /tmp/adaptixserver.log
-                exit 1
-              }
-
-              # ── Integration tests ────────────────────────────────────────
-              echo "AdaptixC2 Ready! Running integration tests..."
-              adaptix-testing -c /tmp/ci_config.yaml -t /workspace/.github/ci/tasks.yaml
-              TEST_EXIT_CODE=$?
-
-              kill $SERVER_PID 2>/dev/null
-              exit $TEST_EXIT_CODE
-            '
-
-      # ── Cleanup ──────────────────────────────────────────────────────────────
-
-      - name: Remove SSH key
+      - name: Print AdaptixC2 server logs
         if: always()
         shell: wsl-bash {0}
-        run: rm -f ~/.ssh/ci_key ~/.ssh/ci_key.pub
+        run: sudo docker logs adaptixc2 2>&1 || true
+
+      - name: Teardown
+        if: always()
+        shell: wsl-bash {0}
+        run: |
+          sudo docker rm -f adaptixc2 2>/dev/null || true
+          rm -f ~/.ssh/ci_key ~/.ssh/ci_key.pub
