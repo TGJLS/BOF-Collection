@@ -4,7 +4,7 @@ name: Integration Tests
 # WSL2 runs three containers via Docker daemon:
 #   - extension-kit  builder: built artifacts extracted from image
 #   - adaptixc2      detached server, --network host, BOF-Collection + profile mounted
-#   - testing-kit    runs feature validation + integration tests
+#   - testing-kit    runs integration tests
 # BOFs are compiled in WSL before container startup.
 # SSH delivery goes from Docker(WSL) → Windows.
 # Beacon callbacks go from Windows → Docker(WSL).
@@ -163,47 +163,6 @@ jobs:
             echo "=== WSL2 NAT mode: WSL_IP=$WSL_IP WSL_GW=$WSL_GW WINDOWS_IP=$WINDOWS_IP, SSH→$SSH_HOST ==="
           fi
 
-          KHARON_PROFILE_B64=$(CALLBACK_HOST="$CALLBACK_HOST" python3 << 'PYEOF'
-          import json, base64, os
-          cb = os.environ["CALLBACK_HOST"]
-          profile = {
-              "callbacks": [{
-                  "hosts": [cb + ":8080"],
-                  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                  "server_error": {
-                      "http_status": 403,
-                      "response": json.dumps({"status": 403, "error": "Forbidden", "message": "Access denied"}),
-                      "headers": {"Content-Type": "application/json; charset=utf-8"}
-                  },
-                  "get": {
-                      "server_headers": {"Content-Type": "text/html; charset=utf-8", "Server": "Apache/2.4.41"},
-                      "client_headers": {"Content-Type": "application/json", "Accept": "application/json"},
-                      "empty_response": "\\x90\\x90\\x90\\x90\\x90",
-                      "uri": {
-                          "/route4": {
-                              "server_output": {"mask": True, "format": "base64", "cookie": "CK_SRV"},
-                              "client_output": {"mask": True, "format": "base64"},
-                              "client_parameters": [{"agent_name": "kharon"}, {"maded_by": "oblivion"}]
-                          }
-                      }
-                  },
-                  "post": {
-                      "server_headers": {"Content-Type": "application/json; charset=utf-8", "Server": "Apache/2.4.41"},
-                      "client_headers": {"Content-Type": "application/json", "Accept": "application/json"},
-                      "empty_response": "\\x90\\x90\\x90\\x90\\x90",
-                      "uri": {
-                          "/route1 /route2": {
-                              "server_output": {"mask": False, "format": "base64", "header": "MSG_PP", "body": json.dumps({"status": 200, "message": "Success"})},
-                              "client_output": {"mask": True, "format": "base64", "prepend": json.dumps({"health": "alive", "message": ""})[:-2], "append": "\"}"}
-                          }
-                      }
-                  }
-              }]
-          }
-          print(base64.b64encode(json.dumps(profile).encode()).decode(), end="")
-          PYEOF
-          )
-
           cat > /tmp/ci_config.yaml << EOF
           server:
             url: https://127.0.0.1:4321
@@ -215,27 +174,28 @@ jobs:
             project: ci
             agent_output: /tmp/ci_agent.exe
             listener:
-              name: ci_kharon
-              type: KharonHTTP
+              name: ci_http
+              type: BeaconHTTP
               config:
                 host_bind: "0.0.0.0"
                 port_bind: 8080
+                callback_addresses:
+                  - "$CALLBACK_HOST:8080"
+                http_method: POST
+                uri:
+                  - /beacon
+                user_agent:
+                  - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                hb_header: "X-Beacon-Id"
+                encrypt_key: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4"
                 ssl: false
-                ssl_cert: ""
-                ssl_key: ""
-                proxy_url: ""
-                proxy_user: ""
-                proxy_pass: ""
-                additional_trusted_hosts: ""
-                block_user_agents: ""
-                domain_rotation_strategy: "Random"
-                trust_x_forwarded_host: false
-                uploaded_file: "$KHARON_PROFILE_B64"
+                page-payload: '{"status":"ok","data":"<<<PAYLOAD_DATA>>>","metrics":"sync"}'
             agent:
-              agent: kharon
-              listener: ci_kharon
-              listener_type: KharonHTTP
+              agent: beacon
+              listener: ci_http
+              listener_type: BeaconHTTP
               config:
+                arch: x64
                 format: Exe
                 sleep: "0s"
                 jitter: 0
