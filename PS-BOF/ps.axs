@@ -1,15 +1,15 @@
 var metadata = {
     name: "PS-BOF",
-    description: "Process management: ps list, ps kill, ps run, ps grep, ps suspend, ps resume",
+    description: "Process management: process list, process kill, process run, process grep, process suspend, process resume",
 };
 
-var cmd_ps_list = ax.create_command("list", "List all running processes", "ps list");
+var cmd_ps_list = ax.create_command("list", "List all running processes", "process list");
 cmd_ps_list.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let bof_path = ax.script_dir() + "_bin/list." + ax.arch(id) + ".o";
-    ax.execute_alias(id, cmdline, `execute bof "${bof_path}"`, "BOF: ps list");
+    ax.execute_alias(id, cmdline, `execute bof "${bof_path}"`, "BOF: process list");
 });
 
-var cmd_ps_kill = ax.create_command("kill", "Terminate a process by PID", "ps kill 1234");
+var cmd_ps_kill = ax.create_command("kill", "Terminate a process by PID", "process kill 1234");
 cmd_ps_kill.addArgInt("pid", true);
 cmd_ps_kill.addArgInt("exit_code", false);
 cmd_ps_kill.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
@@ -21,10 +21,10 @@ cmd_ps_kill.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     } else {
         bof_params = ax.bof_pack("int,int", [pid, 1]);
     }
-    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps kill");
+    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: process kill");
 });
 
-var cmd_ps_run = ax.create_command("run", "Create a new process", "ps run --command \"cmd.exe /c whoami\" --pipe");
+var cmd_ps_run = ax.create_command("run", "Create a new process", "process run --command \"cmd.exe /c whoami\" --pipe");
 cmd_ps_run.addArgFlagString("--command", "command", true, "Command line to execute");
 cmd_ps_run.addArgFlagString("--state", "state", false, "Process state: suspended or standard");
 cmd_ps_run.addArgBool("--pipe", "Capture stdout/stderr via anonymous pipe", false);
@@ -52,37 +52,37 @@ cmd_ps_run.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let bof_params = ax.bof_pack("int,wstr,int,int,int,wstr,wstr,wstr,int",
                                   [method, cmd, state, pipe, ppid, domain, user, pass, token]);
     let bof_path = ax.script_dir() + "_bin/run." + ax.arch(id) + ".o";
-    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps run");
+    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: process run");
 });
 
-var cmd_ps_grep = ax.create_command("grep", "Inspect a process by PID", "ps grep 1234");
+var cmd_ps_grep = ax.create_command("grep", "Inspect a process by PID", "process grep 1234");
 cmd_ps_grep.addArgInt("pid", true);
 cmd_ps_grep.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid        = parsed_json["pid"];
     let bof_path   = ax.script_dir() + "_bin/grep." + ax.arch(id) + ".o";
     let bof_params = ax.bof_pack("int", [pid]);
-    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps grep");
+    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: process grep");
 });
 
-var cmd_ps_suspend = ax.create_command("suspend", "Suspend a process by PID", "ps suspend 1234");
+var cmd_ps_suspend = ax.create_command("suspend", "Suspend a process by PID", "process suspend 1234");
 cmd_ps_suspend.addArgInt("pid", true);
 cmd_ps_suspend.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid        = parsed_json["pid"];
     let bof_path   = ax.script_dir() + "_bin/suspend." + ax.arch(id) + ".o";
     let bof_params = ax.bof_pack("int", [pid]);
-    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps suspend");
+    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: process suspend");
 });
 
-var cmd_ps_resume = ax.create_command("resume", "Resume a suspended process by PID", "ps resume 1234");
+var cmd_ps_resume = ax.create_command("resume", "Resume a suspended process by PID", "process resume 1234");
 cmd_ps_resume.addArgInt("pid", true);
 cmd_ps_resume.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let pid        = parsed_json["pid"];
     let bof_path   = ax.script_dir() + "_bin/resume." + ax.arch(id) + ".o";
     let bof_params = ax.bof_pack("int", [pid]);
-    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: ps resume");
+    ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: process resume");
 });
 
-var cmd_ps = ax.create_command("ps", "Process management");
+var cmd_ps = ax.create_command("process", "Process management");
 cmd_ps.addSubCommands([cmd_ps_list, cmd_ps_kill, cmd_ps_run, cmd_ps_grep, cmd_ps_suspend, cmd_ps_resume]);
 
 var group_ps = ax.create_commands_group("PS-BOF", [cmd_ps]);

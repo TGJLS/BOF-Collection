@@ -198,7 +198,7 @@ void go(char *args, int len) {
         process_handle = KERNEL32$OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
                                                FALSE, (DWORD)pid);
         if (!process_handle) {
-            BeaconPrintf(CALLBACK_ERROR, "ps grep: OpenProcess failed for PID %d (error %d)\n",
+            BeaconPrintf(CALLBACK_ERROR, "process grep: OpenProcess failed for PID %d (error %d)\n",
                          pid, open_err);
             return;
         }

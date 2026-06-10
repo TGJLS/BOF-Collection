@@ -1,29 +1,29 @@
 # PS-BOF
 
-Process management operations: ps list, ps kill, ps run, ps grep, ps suspend, ps resume.
+Process management operations: process list, process kill, process run, process grep, process suspend, process resume.
 
-## ps list
+## process list
 
 List all running processes. Output columns: PID, PPID, session ID, owner (domain\user), architecture.
 
 ```
-ps list
+process list
 ```
 
-## ps kill
+## process kill
 
 Terminate a process by PID. Optional exit code argument (defaults to 1 if omitted).
 
 ```
-ps kill <PID> [exit_code]
+process kill <PID> [exit_code]
 ```
 
-## ps run
+## process run
 
 Launch a new process. Supports default CreateProcess, credential-based launch (WithLogon), and token-based launch (WithToken), with optional PPID spoofing and stdout/stderr pipe capture.
 
 ```
-ps run --command <cmd> [--pipe] [--ppid <PID>] [--state suspended] [--domain <domain> --username <user> --password <pass>] [--token <handle>]
+process run --command <cmd> [--pipe] [--ppid <PID>] [--state suspended] [--domain <domain> --username <user> --password <pass>] [--token <handle>]
 ```
 
 - `--command <cmd>` — Command line to execute (required)
@@ -35,26 +35,26 @@ ps run --command <cmd> [--pipe] [--ppid <PID>] [--state suspended] [--domain <do
 - `--password <pass>` — Password for CreateProcessWithLogon
 - `--token <handle>` — Token handle for CreateProcessWithToken
 
-## ps grep
+## process grep
 
 Inspect a process by PID. Output sections: token (owner, elevated flag, integrity level), modules (name, base address, entry point, size), command line, threads (TIDs).
 
 ```
-ps grep <PID>
+process grep <PID>
 ```
 
-## ps suspend
+## process suspend
 
 Suspend a process by PID.
 
 ```
-ps suspend <PID>
+process suspend <PID>
 ```
 
-## ps resume
+## process resume
 
 Resume a suspended process by PID.
 
 ```
-ps resume <PID>
+process resume <PID>
 ```

@@ -4,24 +4,24 @@ Token management: steal, use, make, rm, revert, privget
 
 |Commands|Usage|Notes|
 |--------|-----|-----|
-|steal|`tk steal <pid>`|Duplicate a process token; optionally skip impersonation with `--no-apply`|
-|use|`tk use <token_handle>`|Impersonate a previously obtained token handle|
-|make|`tk make <username> <password>`|Create a token via LogonUserW; supports `--domain`, `--logon-type`, `--no-apply`|
-|rm|`tk rm <token_handle>`|Close a token handle and free the kernel object|
-|revert|`tk revert`|Drop impersonation and revert to process token|
-|privget|`tk privget`|Enable all privileges on the current token|
+|steal|`token steal <pid>`|Duplicate a process token; optionally skip impersonation with `--no-apply`|
+|use|`token use <token_handle>`|Impersonate a previously obtained token handle|
+|make|`token make <username> <password>`|Create a token via LogonUserW; supports `--domain`, `--logon-type`, `--no-apply`|
+|rm|`token rm <token_handle>`|Close a token handle and free the kernel object|
+|revert|`token revert`|Drop impersonation and revert to process token|
+|privget|`token privget`|Enable all privileges on the current token|
 
 ## Handle Lifecycle
 
-tk rm <handle> closes the kernel object — the handle is gone and cannot be reused. tk revert drops impersonation but keeps handles alive — the token can be re-activated with tk use. Always tk rm handles you no longer need to avoid leaking kernel objects in the beacon process.
+token rm <handle> closes the kernel object — the handle is gone and cannot be reused. token revert drops impersonation but keeps handles alive — the token can be re-activated with token use. Always token rm handles you no longer need to avoid leaking kernel objects in the beacon process.
 
 ## steal
 
-Duplicate a process token by PID via OpenProcessToken + DuplicateTokenEx. Impersonation is applied immediately via ImpersonateLoggedOnUser unless --no-apply is passed. The duplicated handle is printed for later reuse with `tk use`.
+Duplicate a process token by PID via OpenProcessToken + DuplicateTokenEx. Impersonation is applied immediately via ImpersonateLoggedOnUser unless --no-apply is passed. The duplicated handle is printed for later reuse with `token use`.
 
 ```
-tk steal <pid>
-tk steal <pid> --no-apply
+token steal <pid>
+token steal <pid> --no-apply
 ```
 
 ## use
@@ -29,34 +29,34 @@ tk steal <pid> --no-apply
 Impersonate a previously obtained token handle via ImpersonateLoggedOnUser.
 
 ```
-tk use <token_handle>
+token use <token_handle>
 ```
 
 ## make
 
-Create a token from plaintext credentials via LogonUserW. Impersonation is applied immediately unless --no-apply is passed. The token handle is printed for later reuse with `tk use`.
+Create a token from plaintext credentials via LogonUserW. Impersonation is applied immediately unless --no-apply is passed. The token handle is printed for later reuse with `token use`.
 
 ```
-tk make <username> <password>
-tk make <username> <password> --domain <domain>
-tk make <username> <password> --logon-type <type>
-tk make <username> <password> --no-apply
+token make <username> <password>
+token make <username> <password> --domain <domain>
+token make <username> <password> --logon-type <type>
+token make <username> <password> --no-apply
 ```
 
 ## rm
 
-Close a token handle and free the kernel object. The handle is gone after this call and cannot be reused with `tk use`.
+Close a token handle and free the kernel object. The handle is gone after this call and cannot be reused with `token use`.
 
 ```
-tk rm <token_handle>
+token rm <token_handle>
 ```
 
 ## revert
 
-Drop impersonation and revert to the process token. Open token handles are not closed; they remain valid and can be reused with `tk use`.
+Drop impersonation and revert to the process token. Open token handles are not closed; they remain valid and can be reused with `token use`.
 
 ```
-tk revert
+token revert
 ```
 
 ## privget
@@ -64,7 +64,7 @@ tk revert
 Enable all privileges on the current token by iterating the token's privilege set and calling AdjustTokenPrivileges.
 
 ```
-tk privget
+token privget
 ```
 
 ## Credits

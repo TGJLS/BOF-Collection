@@ -100,7 +100,7 @@ void go(char *args, int len)
     /* Zero-init everything */
     cmd_buf = (WCHAR*)MSVCRT$malloc(32768 * sizeof(WCHAR));
     if (!cmd_buf) {
-        BeaconPrintf(CALLBACK_ERROR, "ps run: malloc failed\n");
+        BeaconPrintf(CALLBACK_ERROR, "process run: malloc failed\n");
         return;
     }
 
@@ -127,7 +127,7 @@ void go(char *args, int len)
     if (a.argument) {
         int wlen = KERNEL32$lstrlenW(a.argument);
         if (wlen >= 32768) {
-            BeaconPrintf(CALLBACK_ERROR, "ps run: command too long\n");
+            BeaconPrintf(CALLBACK_ERROR, "process run: command too long\n");
             return;
         }
         memcpy(cmd_buf, a.argument, (wlen + 1) * sizeof(WCHAR));
@@ -152,13 +152,13 @@ void go(char *args, int len)
             KERNEL32$InitializeProcThreadAttributeList(NULL, 1, 0, &attribute_size);
             attribute_buff = MSVCRT$malloc(attribute_size);
             if (!attribute_buff) {
-                BeaconPrintf(CALLBACK_ERROR, "ps run: failed to allocate attribute list\n");
+                BeaconPrintf(CALLBACK_ERROR, "process run: failed to allocate attribute list\n");
                 goto cleanup;
             }
             if (!KERNEL32$InitializeProcThreadAttributeList(
                     (LPPROC_THREAD_ATTRIBUTE_LIST)attribute_buff, 1, 0, &attribute_size)) {
                 err = KERNEL32$GetLastError();
-                fmt_err("ps run: InitializeProcThreadAttributeList failed", err);
+                fmt_err("process run: InitializeProcThreadAttributeList failed", err);
                 goto cleanup;
             }
 
@@ -167,7 +167,7 @@ void go(char *args, int len)
                 PROCESS_CREATE_PROCESS | PROCESS_DUP_HANDLE, FALSE, (DWORD)a.ppid);
             if (!parent_handle) {
                 err = KERNEL32$GetLastError();
-                fmt_err("ps run: OpenProcess (PPID) failed", err);
+                fmt_err("process run: OpenProcess (PPID) failed", err);
                 goto cleanup;
             }
 
@@ -176,7 +176,7 @@ void go(char *args, int len)
                     PROC_THREAD_ATTRIBUTE_PARENT_PROCESS,
                     &parent_handle, sizeof(HANDLE), NULL, NULL)) {
                 err = KERNEL32$GetLastError();
-                fmt_err("ps run: UpdateProcThreadAttribute failed", err);
+                fmt_err("process run: UpdateProcThreadAttribute failed", err);
                 goto cleanup;
             }
 
@@ -199,7 +199,7 @@ void go(char *args, int len)
 
         if (!KERNEL32$CreatePipe(&pipe_read, &pipe_write, &sa, 0)) {
             err = KERNEL32$GetLastError();
-            fmt_err("ps run: CreatePipe failed", err);
+            fmt_err("process run: CreatePipe failed", err);
             goto cleanup;
         }
         /* Make only the write end inheritable so no other parent handles leak into the child */
@@ -217,7 +217,7 @@ void go(char *args, int len)
                     parent_handle, &pipe_dup,
                     0, TRUE, DUPLICATE_SAME_ACCESS)) {
                 err = KERNEL32$GetLastError();
-                fmt_err("ps run: DuplicateHandle (pipe into parent) failed", err);
+                fmt_err("process run: DuplicateHandle (pipe into parent) failed", err);
                 goto cleanup;
             }
             KERNEL32$CloseHandle(pipe_write);
@@ -267,14 +267,14 @@ void go(char *args, int len)
 
     default:
         BeaconPrintf(CALLBACK_ERROR,
-                     "ps run: unknown method %d (0=default,1=logon,2=token)\n",
+                     "process run: unknown method %d (0=default,1=logon,2=token)\n",
                      a.method);
         goto cleanup;
     }
 
     if (!success) {
         err = KERNEL32$GetLastError();
-        fmt_err("ps run: CreateProcess failed", err);
+        fmt_err("process run: CreateProcess failed", err);
         goto cleanup;
     }
 
