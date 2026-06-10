@@ -7,45 +7,45 @@ tasks:
   # ── TK-BOF ──
 
   # tk-spawn-fixture (D-01, D-02)
-  - cmdline: 'process run --command "ping -n 999 127.0.0.1"'
+  - cmdline: 'ps_run --command "ping -n 999 127.0.0.1"'
     expected_regex: "Process started: PID \\d+"
     capture:
       tk_pid: "Process started: PID (\\d+)"
 
   # tk-steal-immediate (D-03)
-  - cmdline: "token steal {{tk_pid}}"
+  - cmdline: "tk_steal {{tk_pid}}"
     expected_regex: "\\[\\+\\] Handle: 0x[0-9a-fA-F]+"
     not_expected: "error"
 
   # tk-revert-after-steal (D-03)
-  - cmdline: "token revert"
+  - cmdline: "tk_revert"
     expected: "[+] Reverted to process token."
 
   # tk-steal-noapply (D-04)
-  - cmdline: "token steal {{tk_pid}} --no-apply"
+  - cmdline: "tk_steal {{tk_pid}} --no-apply"
     expected_regex: "\\[\\+\\] Handle: 0x[0-9a-fA-F]+ \\(impersonation not applied\\)"
     capture:
       tk_handle: "Handle: (0x[0-9a-fA-F]+)"
 
   # tk-use (D-04)
-  - cmdline: "token use {{tk_handle}}"
+  - cmdline: "tk_use {{tk_handle}}"
     expected_regex: "\\[\\+\\] Impersonating handle 0x[0-9a-fA-F]+"
 
   # tk-rm (D-04)
-  - cmdline: "token rm {{tk_handle}}"
+  - cmdline: "tk_rm {{tk_handle}}"
     expected_regex: "\\[\\+\\] Handle 0x[0-9a-fA-F]+ closed\\."
 
   # tk-make (D-08)
-  - cmdline: "token make --username tk_test --password Tk_Test_Pass1!"
+  - cmdline: "tk_make --username tk_test --password Tk_Test_Pass1!"
     expected_regex: "\\[\\+\\] Handle: 0x[0-9a-fA-F]+"
     not_expected: "error"
 
   # tk-revert-after-make (D-09)
-  - cmdline: "token revert"
+  - cmdline: "tk_revert"
     expected: "[+] Reverted to process token."
 
   # tk-privget (D-10)
-  - cmdline: "token privget"
+  - cmdline: "tk_privget"
     not_expected: "error"
 
   # ── TYPE ──
@@ -215,35 +215,35 @@ tasks:
   # ── PS-BOF ──
 
   # ps-list
-  - cmdline: "process list"
+  - cmdline: "ps_list"
     expected: "System"
 
   # ps-list-lsass
-  - cmdline: "process list"
+  - cmdline: "ps_list"
     expected: "lsass.exe"
 
   # ps-run-spawn-ping (CI-02/04/05/06 fixture — ping runs indefinitely on server SKUs)
-  - cmdline: 'process run --command "ping -n 999 127.0.0.1"'
+  - cmdline: 'ps_run --command "ping -n 999 127.0.0.1"'
     expected_regex: "Process started: PID \\d+"
     capture:
       pid: "Process started: PID (\\d+)"
 
   # ps-run-pipe-whoami (CI-03)
-  - cmdline: 'process run --command "cmd.exe /c whoami" --pipe'
+  - cmdline: 'ps_run --command "cmd.exe /c whoami" --pipe'
     expected_regex: "(?i)ci_runner"
 
   # ps-grep (CI-04)
-  - cmdline: "process grep {{pid}}"
+  - cmdline: "ps_grep {{pid}}"
     expected_regex: "(?s)\\[Token\\].*\\[Modules\\].*\\[Cmdline\\].*\\[Threads\\]"
 
   # ps-suspend (CI-05)
-  - cmdline: "process suspend {{pid}}"
+  - cmdline: "ps_suspend {{pid}}"
     not_expected: "error"
 
   # ps-resume (CI-06)
-  - cmdline: "process resume {{pid}}"
+  - cmdline: "ps_resume {{pid}}"
     not_expected: "error"
 
   # ps-kill (CI-02)
-  - cmdline: "process kill {{pid}}"
+  - cmdline: "ps_kill {{pid}}"
     not_expected: "error"

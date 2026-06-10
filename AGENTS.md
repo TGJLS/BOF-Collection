@@ -7,8 +7,8 @@ BOFs for [AdaptixC2](https://github.com/Adaptix-Framework/AdaptixC2) — C sourc
 | Directory | Commands | Description |
 |-----------|----------|-------------|
 | `FS-BOF` | `type mkdir copy move del rmdir pwd cd` | Filesystem operations |
-| `PS-BOF` | `process list/kill/run/grep/suspend/resume` | Process management |
-| `TK-BOF` | `token steal/use/make/rm/revert/privget` | Token manipulation |
+| `PS-BOF` | `ps_list ps_kill ps_run ps_grep ps_suspend ps_resume` | Process management |
+| `TK-BOF` | `tk_steal tk_use tk_make tk_rm tk_revert tk_privget` | Token manipulation |
 | `Exit-BOF` | `exit process/thread` | Controlled beacon termination |
 | `Postex-BOF` | `veeam-dumper` | Post-exploitation (Veeam credential dump) |
 

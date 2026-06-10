@@ -1,9 +1,9 @@
 var metadata = {
     name: "TK-BOF",
-    description: "Token management: token steal, token use, token make, token rm, token revert, token privget",
+    description: "Token management: tk_steal, tk_use, tk_make, tk_rm, tk_revert, tk_privget",
 };
 
-var cmd_tk_steal = ax.create_command("steal", "Duplicate a process token by PID and optionally apply impersonation", "token steal <pid>");
+var cmd_tk_steal = ax.create_command("tk_steal", "Duplicate a process token by PID and optionally apply impersonation", "tk_steal <pid>");
 cmd_tk_steal.addArgInt("pid", true);
 cmd_tk_steal.addArgBool("--no-apply", "Skip immediate impersonation; print handle only", false);
 cmd_tk_steal.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
@@ -14,7 +14,7 @@ cmd_tk_steal.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: token steal");
 });
 
-var cmd_tk_use = ax.create_command("use", "Impersonate a previously obtained token handle", "token use <token_handle>");
+var cmd_tk_use = ax.create_command("tk_use", "Impersonate a previously obtained token handle", "tk_use <token_handle>");
 cmd_tk_use.addArgString("token_handle", true);
 cmd_tk_use.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let token_handle = parseInt(parsed_json["token_handle"], 16);
@@ -23,7 +23,7 @@ cmd_tk_use.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: token use");
 });
 
-var cmd_tk_make = ax.create_command("make", "Create a token from credentials via LogonUserW", "token make <username> <password>");
+var cmd_tk_make = ax.create_command("tk_make", "Create a token from credentials via LogonUserW", "tk_make <username> <password>");
 cmd_tk_make.addArgString("username", true);
 cmd_tk_make.addArgString("password", true);
 cmd_tk_make.addArgFlagString("--domain", "domain", false, "Logon domain (default: .)");
@@ -40,7 +40,7 @@ cmd_tk_make.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: token make");
 });
 
-var cmd_tk_rm = ax.create_command("rm", "Close a token handle and free the kernel object", "token rm <token_handle>");
+var cmd_tk_rm = ax.create_command("tk_rm", "Close a token handle and free the kernel object", "tk_rm <token_handle>");
 cmd_tk_rm.addArgString("token_handle", true);
 cmd_tk_rm.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let token_handle = parseInt(parsed_json["token_handle"], 16);
@@ -49,21 +49,18 @@ cmd_tk_rm.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}" ${bof_params}`, "BOF: token rm");
 });
 
-var cmd_tk_revert = ax.create_command("revert", "Drop impersonation and revert to process token", "token revert");
+var cmd_tk_revert = ax.create_command("tk_revert", "Drop impersonation and revert to process token", "tk_revert");
 cmd_tk_revert.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let bof_path = ax.script_dir() + "_bin/revert." + ax.arch(id) + ".o";
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}"`, "BOF: token revert");
 });
 
-var cmd_tk_privget = ax.create_command("privget", "Enable all privileges on the current token", "token privget");
+var cmd_tk_privget = ax.create_command("tk_privget", "Enable all privileges on the current token", "tk_privget");
 cmd_tk_privget.setPreHook(function (id, cmdline, parsed_json, ...parsed_lines) {
     let bof_path = ax.script_dir() + "_bin/privget." + ax.arch(id) + ".o";
     ax.execute_alias(id, cmdline, `execute bof "${bof_path}"`, "BOF: token privget");
 });
 
-var cmd_tk = ax.create_command("token", "Token management: steal, use, make, rm, revert, privget");
-cmd_tk.addSubCommands([cmd_tk_steal, cmd_tk_use, cmd_tk_make, cmd_tk_rm, cmd_tk_revert, cmd_tk_privget]);
-
-var group_tk = ax.create_commands_group("TK-BOF", [cmd_tk]);
+var group_tk = ax.create_commands_group("TK-BOF", [cmd_tk_steal, cmd_tk_use, cmd_tk_make, cmd_tk_rm, cmd_tk_revert, cmd_tk_privget]);
 // beacon-only: token impersonation BOFs are only meaningful inside beacon agents
 ax.register_commands_group(group_tk, ["beacon", "gopher", "kharon"], ["windows"], []);
