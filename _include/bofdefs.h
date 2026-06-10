@@ -161,3 +161,67 @@ WINBASEAPI NTSTATUS NTAPI NTDLL$NtQueryInformationProcess(HANDLE ProcessHandle, 
 #define intRealloc(ptr, size) (ptr) ? KERNEL32$HeapReAlloc(KERNEL32$GetProcessHeap(), HEAP_ZERO_MEMORY, ptr, size) : KERNEL32$HeapAlloc(KERNEL32$GetProcessHeap(), HEAP_ZERO_MEMORY, size)
 #define intFree(addr) KERNEL32$HeapFree(KERNEL32$GetProcessHeap(), 0, addr)
 #define intZeroMemory(addr,size) MSVCRT$memset((addr),0,size)
+
+// =============================================================================
+// CRYPT32 — data protection (Postex-BOF)
+// =============================================================================
+#include <wincrypt.h>
+WINADVAPI BOOL WINAPI CRYPT32$CryptStringToBinaryA(LPCSTR pszString, DWORD cchString, DWORD dwFlags, BYTE *pbBinary, DWORD *pcbBinary, DWORD *pdwSkip, DWORD *pdwFlags);
+WINADVAPI BOOL WINAPI CRYPT32$CryptUnprotectData(DATA_BLOB *pDataIn, LPWSTR *ppszDataDescr, DATA_BLOB *pOptionalEntropy, PVOID pvReserved, void *pPromptStruct, DWORD dwFlags, DATA_BLOB *pDataOut);
+
+// =============================================================================
+// ADVAPI32 — registry (Postex-BOF)
+// =============================================================================
+WINADVAPI LSTATUS WINAPI ADVAPI32$RegOpenKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult);
+WINADVAPI LSTATUS WINAPI ADVAPI32$RegCloseKey(HKEY hKey);
+WINADVAPI LSTATUS WINAPI ADVAPI32$RegQueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData);
+
+// =============================================================================
+// KERNEL32 — ASCII process/file ops (Postex-BOF)
+// =============================================================================
+WINBASEAPI BOOL WINAPI KERNEL32$CreateProcessA(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCSTR lpCurrentDirectory, LPSTARTUPINFOA lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation);
+WINBASEAPI DWORD WINAPI KERNEL32$SearchPathA(LPCSTR lpPath, LPCSTR lpFileName, LPCSTR lpExtension, DWORD nBufferLength, LPSTR lpBuffer, LPSTR *lpFilePart);
+WINBASEAPI DWORD WINAPI KERNEL32$GetFileAttributesA(LPCSTR lpFileName);
+
+// =============================================================================
+// MSVCRT — string operations (Postex-BOF)
+// =============================================================================
+WINBASEAPI int __cdecl MSVCRT$strcmp(const char *_Str1, const char *_Str2);
+WINBASEAPI size_t __cdecl MSVCRT$strlen(const char *str);
+WINBASEAPI char * __cdecl MSVCRT$strcat(char *dest, const char *src);
+WINBASEAPI char * __cdecl MSVCRT$strcpy(char *dest, const char *src);
+WINBASEAPI void * __cdecl MSVCRT$memcpy(void *dest, const void *src, size_t n);
+WINBASEAPI void * __cdecl MSVCRT$realloc(void *ptr, size_t size);
+WINBASEAPI char * __cdecl MSVCRT$strstr(const char *haystack, const char *needle);
+WINBASEAPI char * __cdecl MSVCRT$strchr(const char *s, int c);
+
+// =============================================================================
+// Standard-name aliases for Postex-BOF (cs_veeam_dumper uses undecorated names)
+// =============================================================================
+#define strcmp              MSVCRT$strcmp
+#define strlen              MSVCRT$strlen
+#define strcat              MSVCRT$strcat
+#define strcpy              MSVCRT$strcpy
+#define memcpy              MSVCRT$memcpy
+#define realloc             MSVCRT$realloc
+#define free                MSVCRT$free
+#define malloc              MSVCRT$malloc
+#define strstr              MSVCRT$strstr
+#define strchr              MSVCRT$strchr
+#define SearchPathA         KERNEL32$SearchPathA
+#define GetFileAttributesA  KERNEL32$GetFileAttributesA
+#define RegOpenKeyExA       ADVAPI32$RegOpenKeyExA
+#define RegCloseKey         ADVAPI32$RegCloseKey
+#define RegQueryValueExA    ADVAPI32$RegQueryValueExA
+#define CreatePipe          KERNEL32$CreatePipe
+#define CreateProcessA      KERNEL32$CreateProcessA
+#define SetHandleInformation KERNEL32$SetHandleInformation
+#define ReadFile            KERNEL32$ReadFile
+#define CloseHandle         KERNEL32$CloseHandle
+#define CryptStringToBinaryA CRYPT32$CryptStringToBinaryA
+#define CryptUnprotectData  CRYPT32$CryptUnprotectData
+#define GetLastError        KERNEL32$GetLastError
+#define GetProcessHeap      KERNEL32$GetProcessHeap
+#define HeapAlloc           KERNEL32$HeapAlloc
+#define HeapFree            KERNEL32$HeapFree
+#define WideCharToMultiByte KERNEL32$WideCharToMultiByte

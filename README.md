@@ -87,7 +87,16 @@ Token management: steal, use, make, rm, revert, privget. [More details](TK-BOF/R
 |revert|`tk revert`|Drop impersonation and revert to process token|
 |privget|`tk privget`|Enable all privileges on the current token|
 
+## Postex-BOF
+
+Post-exploitation credential harvesting. [More details](Postex-BOF/README.md)
+
+|Commands|Usage|Notes|
+|--------|-----|-----|
+|veeam-dumper|`veeam-dumper <auto\|mssql\|psql> [--dbname <name>] [--exepath <path>] [--debug] [--veeamone]`|Dump and decrypt credentials from a Veeam Backup & Replication or VeeamOne database; requires admin beacon|
+
 ## Credits
 
 - [Extension-Kit](https://github.com/Adaptix-Framework/Extension-Kit): Project structure and README
 - [Kharon](https://github.com/entropy-z/Kharon): PS-BOF and TK-BOF command implementations
+- [VeeamHive](https://github.com/MWRCyberSec/VeeamHive): Postex-BOF veeam-dumper implementation
