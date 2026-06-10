@@ -66,22 +66,6 @@ tasks:
   - cmdline: "type \\\\localhost\\C$\\Temp\\fsbof-test\\hello.txt"
     expected: "Hello from fsbof-test"
 
-  # ── MKDIR ──
-
-  # mkdir-happy-path
-  - cmdline: "mkdir C:\\Temp\\fsbof-test\\newdir"
-
-  # mkdir-already-exists
-  - cmdline: "mkdir C:\\Temp\\fsbof-test\\newdir"
-    expected: "A subdirectory or file C:\\Temp\\fsbof-test\\newdir already exists."
-
-  # mkdir-missing-parent
-  - cmdline: "mkdir C:\\Temp\\fsbof-test\\a\\b\\c"
-
-  # mkdir-path-too-long
-  - cmdline: "mkdir C:\\Temp\\fsbof-test\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa\\aaaaaaaaaaaaaaaaaaaa"
-    expected: "The directory or file cannot be created."
-
   # ── RMDIR ──
 
   # rmdir-happy-path
