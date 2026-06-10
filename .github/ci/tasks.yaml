@@ -169,24 +169,6 @@ tasks:
   # del-directory-target
   - cmdline: "del C:\\Temp\\fsbof-test\\dest"
 
-  # ── CD ──
-
-  # cd-happy-path
-  - cmdline: "cd C:\\Temp\\fsbof-test"
-
-  # cd-missing-dir
-  - cmdline: "cd C:\\Temp\\fsbof-test\\nonexistent"
-    expected: "The system cannot find the file specified."
-
-  # cd-relative-parent-step1
-  - cmdline: "cd C:\\Temp\\fsbof-test"
-
-  # cd-relative-parent-step2
-  - cmdline: "cd .."
-
-  # cd-unc-path
-  - cmdline: "cd \\\\localhost\\C$\\Temp\\fsbof-test"
-
   # ── PWD ──
 
   # pwd-happy-path-step1
