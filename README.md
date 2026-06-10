@@ -99,4 +99,4 @@ Post-exploitation credential harvesting. [More details](Postex-BOF/README.md)
 
 - [Extension-Kit](https://github.com/Adaptix-Framework/Extension-Kit): Project structure and README
 - [Kharon](https://github.com/entropy-z/Kharon): PS-BOF and TK-BOF command implementations
-- [VeeamHive](https://github.com/MWRCyberSec/VeeamHive): Postex-BOF veeam-dumper implementation
+- [VeeamHive](https://github.com/MWR-CyberSec/VeeamDumper-BOF): Postex-BOF veeam-dumper implementation
