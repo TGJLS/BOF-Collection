@@ -231,3 +231,9 @@ tasks:
   # ps-kill (CI-02)
   - cmdline: "ps_kill {{pid}}"
     not_expected: "error"
+
+  # ── VEEAM-DUMPER ──
+
+  # veeam-dumper-smoke (invalid dbtype triggers validation error — no Veeam install required)
+  - cmdline: "veeam-dumper badtype"
+    expected: "First argument must be 'mssql' or 'psql', got badtype"
