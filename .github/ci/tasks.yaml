@@ -4,6 +4,12 @@
 
 tasks:
 
+  # ── VEEAM-DUMPER ──
+
+  # veeam-dumper-smoke (invalid dbtype triggers validation error — no Veeam install required)
+  - cmdline: "veeam-dumper badtype"
+    expected: "First argument must be 'mssql' or 'psql', got badtype"
+
   # ── TK-BOF ──
 
   # tk-spawn-fixture (D-01, D-02)
@@ -214,8 +220,3 @@ tasks:
   - cmdline: "ps_kill {{pid}}"
     not_expected: "error"
 
-  # ── VEEAM-DUMPER ──
-
-  # veeam-dumper-smoke (invalid dbtype triggers validation error — no Veeam install required)
-  - cmdline: "veeam-dumper badtype"
-    expected: "First argument must be 'mssql' or 'psql', got badtype"
